@@ -2,7 +2,7 @@
 
 spl_autoload_register();
 
-use App\Models\{Clothes, Users};
+use engine\Models\{Clothes, Users};
 
 $shirt = new Clothes(
     'Рубашка',

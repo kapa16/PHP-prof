@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace engine\Models;
 
 class Clothes extends Product
 {

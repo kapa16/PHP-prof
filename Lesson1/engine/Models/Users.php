@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace engine\Models;
 
-use App\Model;
+use engine\Model;
 
 /**
  * Class Users - пользователи сайта
- * @package App\Models
+ * @package engine\Models
  */
 class Users extends Model
 {
