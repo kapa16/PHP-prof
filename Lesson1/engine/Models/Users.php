@@ -17,14 +17,13 @@ class Users extends Model
     public $lastname;
     public $email;
 
-    //Можно создавать через конструктор, но лучше брать из базы
-//    public function __construct($login, $name, $lastName, $email)
-//    {
-//        $this->login = $login;
-//        $this->name = $name;
-//        $this->lastName = $lastName;
-//        $this->email = $email;
-//    }
+    public function __construct($login = '', $name = '', $lastName = '', $email = '')
+    {
+        $this->login = $login;
+        $this->name = $name;
+        $this->lastname = $lastName;
+        $this->email = $email;
+    }
 
     /**
      * Возвращяет ФИО пользователя

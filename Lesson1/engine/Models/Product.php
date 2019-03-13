@@ -6,17 +6,26 @@ use engine\Model;
 
 class Product extends Model
 {
+
+    public const TABLE = 'products';
+
     protected $name;
     protected $description;
     protected $price;
-    protected $discount;
+    protected $category_id;
 
-    public function __construct(string $name, string $description, float $price, int $discount)
+    public function __construct(
+        string $name = '',
+        string $description = '',
+        float $price = 0,
+        int $category_id = 1
+    )
+
     {
         $this->name = $name;
         $this->description = $description;
         $this->price = $price;
-        $this->discount = $discount;
+        $this->category_id = $category_id;
     }
 
     /**
@@ -24,6 +33,6 @@ class Product extends Model
      */
     public function getPrice()
     {
-        return $this->price * $this->discount / 100;
+        return $this->price;
     }
 }

@@ -1,25 +1,34 @@
 <?php
+//1-4
+spl_autoload_register(function ($class) {
+    $class = str_replace('\\', '/', $class);
+    require_once __DIR__ . '/../' . $class . '.php';
+});
 
-spl_autoload_register();
+use engine\Models\{Product, Users, Category};
 
-use engine\Models\{Clothes, Users};
+//Создаем категории товаров
+$categoryMan = new Category('Женская одежда', 0, 0);
+echo $categoryMan->insert();
+echo '<br>';
+$categoryShirt = new Category('Рубашки', 5, $categoryMan->id);
+echo $categoryShirt->insert();
+echo '<br>';
 
-$shirt = new Clothes(
+//Создаем товар
+$shirt = new Product(
     'Рубашка',
     'Рубашка длинная',
     580,
-    5,
-    'XXL',
-    'Incity'
+    $categoryShirt->id
 );
+echo $shirt->insert();
+echo '<br>';
 
-var_dump($shirt);
+var_dump(Category::getAll());
+var_dump(Product::getAll());
 
-//Создание через конструктор
-//$user = new Users('sima', 'John', 'Thompson', 'j@mn.com');
-//echo $user->getFullName() . '<br>';
-
-//Загрузка из базы
+//Загрузка из базы всех пользователей
 $users = Users::getAll();
 var_dump($users);
 
@@ -28,12 +37,15 @@ echo '<hr>';
 
 //--------------------------------------------------
 //5. Дан код:
-class A {
-    public function foo() {
+class A
+{
+    public function foo()
+    {
         static $x = 0;
         echo ++$x;
     }
 }
+
 $a1 = new A();
 $a2 = new A();
 $a1->foo();   //- 1
@@ -50,14 +62,19 @@ echo '<hr>';
 
 //------------------------------------------------------
 //Немного изменим п.5:
-class A6 {
-    public function foo() {
+class A6
+{
+    public function foo()
+    {
         static $x = 0;
         echo ++$x;
     }
 }
-class B extends A6 {
+
+class B extends A6
+{
 }
+
 $a1 = new A6();
 $b1 = new B();
 $a1->foo();     // - 1
@@ -74,14 +91,19 @@ echo '<hr>';
 //------------------------------------------------------
 
 //7. *Дан код:
-class A7 {
-    public function foo() {
+class A7
+{
+    public function foo()
+    {
         static $x = 0;
         echo ++$x;
     }
 }
-class B7 extends A7 {
+
+class B7 extends A7
+{
 }
+
 $a1 = new A7;
 $b1 = new B7;
 $a1->foo();     // - 1
