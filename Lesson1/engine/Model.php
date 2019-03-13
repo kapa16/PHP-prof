@@ -61,9 +61,11 @@ abstract class Model
     /**
      * удаляет запись из базы данных
      */
-    public function delete()
+    public function delete(): bool
     {
-
+        $db = new Db();
+        $sql = 'DELETE FROM `' . static::TABLE . '` WHERE `id`=:id;';
+        return $db->exec($sql, [':id' => $this->id]);
     }
 
     /**
