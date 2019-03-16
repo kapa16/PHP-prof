@@ -25,19 +25,29 @@ class Db
      * @param $class - имя класса дла создания экземлпяров по полученным данным
      * @return array - массив объектов
      */
-    public function query($sql, $params, $class): array
+    public function query(string $sql, array $params, string $class): array
     {
         $sth = $this->link->prepare($sql);
         $sth->execute($params);
         return $sth->fetchAll(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $class);
     }
 
-    public function exec($sql, $params): bool
+    /**
+     * Выполняет подготовленный запрос к БД
+     * @param $sql - текст запроса
+     * @param $params - параметры запроса
+     * @return bool - выполнен или нет запрос
+     */
+    public function exec(string $sql, array $params): bool
     {
         $sth = $this->link->prepare($sql);
         return $sth->execute($params);
     }
 
+    /**
+     * Возвращает id последних вставленных данных
+     * @return string - значение ID
+     */
     public function getInsertedId():string
     {
         return $this->link->lastInsertId();

@@ -3,6 +3,8 @@
 -- Host: localhost    Database: shop
 -- ------------------------------------------------------
 -- Server version	8.0.12
+CREATE DATABASE `shop`;
+USE `shop`;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;

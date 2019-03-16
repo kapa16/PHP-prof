@@ -24,6 +24,7 @@ $shirt = new Product(
 );
 echo $shirt->insert();
 echo '<br>';
+echo '<hr>';
 
 //Получаем категории
 $categories = Category::getAll();
@@ -34,17 +35,19 @@ foreach ($categories as $category) {
 }
 $categories = Category::getAll();
 var_dump($categories);
+echo '<hr>';
 
 
 //Получаем товары
-$categories = Product::getAll();
-var_dump($categories);
+$products = Product::getAll();
+var_dump($products);
 //Удаляем товары
-foreach ($categories as $category) {
-    $category->delete();
+foreach ($products as $product) {
+    $product->delete();
 }
-$categories = Product::getAll();
+$products = Product::getAll();
 var_dump($categories);
+echo '<hr>';
 
 
 //Загрузка из базы всех пользователей
