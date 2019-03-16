@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Products;
 
 use App\Model;
 
-class Product extends Model
+abstract class Product extends Model
 {
 
     public const TABLE = 'products';
@@ -29,10 +29,9 @@ class Product extends Model
     }
 
     /**
-     * Выдает цену с учетом акций
+     * Return final coast of product
+     * @param int $amount
+     * @return float - final coast
      */
-    public function getPrice()
-    {
-        return $this->price;
-    }
+    abstract public function FinalCost($amount = 1): float;
 }

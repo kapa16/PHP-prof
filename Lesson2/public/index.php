@@ -15,16 +15,16 @@ $categoryShirt = new Category('Рубашки', 5, $categoryMan->id);
 echo $categoryShirt->insert();
 echo '<br>';
 
-//Создаем товар
-$shirt = new Product(
-    'Рубашка',
-    'Рубашка длинная',
-    580,
-    $categoryShirt->id
-);
-echo $shirt->insert();
-echo '<br>';
-echo '<hr>';
+////Создаем товар
+//$shirt = new Product(
+//    'Рубашка',
+//    'Рубашка длинная',
+//    580,
+//    $categoryShirt->id
+//);
+//echo $shirt->insert();
+//echo '<br>';
+//echo '<hr>';
 
 //Получаем категории
 $categories = Category::getAll();
@@ -38,16 +38,16 @@ var_dump($categories);
 echo '<hr>';
 
 
-//Получаем товары
-$products = Product::getAll();
-var_dump($products);
-//Удаляем товары
-foreach ($products as $product) {
-    $product->delete();
-}
-$products = Product::getAll();
-var_dump($categories);
-echo '<hr>';
+////Получаем товары
+//$products = Product::getAll();
+//var_dump($products);
+////Удаляем товары
+//foreach ($products as $product) {
+//    $product->delete();
+//}
+//$products = Product::getAll();
+//var_dump($categories);
+//echo '<hr>';
 
 
 //Загрузка из базы всех пользователей
