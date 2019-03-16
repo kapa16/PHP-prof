@@ -12,13 +12,22 @@ abstract class Model
 
     public $id;
 
+    protected static function getTableName()
+    {
+        if (!static::TABLE) {
+            exit('Не задано имя таблицы БД');
+        } else {
+            return static::TABLE;
+        }
+    }
+
     /**
      * Получает все записи из базы данных, таблицы static::TABLE;
      */
     public static function getAll(): array
     {
         $db = new Db();
-        $sql = 'SELECT * FROM `' . static::TABLE . '`;';
+        $sql = 'SELECT * FROM `' . static::getTableName() . '`;';
         return $db->query($sql, [], static::class);
     }
 
@@ -27,9 +36,7 @@ abstract class Model
      */
     public function insert(): string
     {
-        if (!static::TABLE) {
-            return 'Не задано имя таблицы БД';
-        }
+
 
         $vars = get_object_vars($this);
 
@@ -44,7 +51,7 @@ abstract class Model
         }
 
         $db = new Db();
-        $sql = 'INSERT INTO `' . static::TABLE . '` 
+        $sql = 'INSERT INTO `' . static::getTableName() . '` 
         (' . implode(', ', $fields) . ') VALUES
         (' . implode(', ', array_keys($params)) . ');';
 
@@ -63,8 +70,11 @@ abstract class Model
      */
     public function delete(): bool
     {
+        if (!$this->id) {
+            exit('Не задан ID');
+        }
         $db = new Db();
-        $sql = 'DELETE FROM `' . static::TABLE . '` WHERE `id`=:id;';
+        $sql = 'DELETE FROM `' . static::getTableName() . '` WHERE `id`=:id;';
         return $db->exec($sql, [':id' => $this->id]);
     }
 
