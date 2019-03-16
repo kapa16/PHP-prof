@@ -1,8 +1,8 @@
 <?php
 
-namespace engine\Models;
+namespace App\Models;
 
-use engine\Model;
+use App\Model;
 
 class Product extends Model
 {

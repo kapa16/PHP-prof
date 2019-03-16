@@ -1,11 +1,11 @@
 <?php
 
-namespace engine;
+namespace App;
 
 /**
  * Class Db
  * Подключение и выполнение запросов к БД
- * @package engine
+ * @package App
  */
 class Db
 {

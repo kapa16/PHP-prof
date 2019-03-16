@@ -1,10 +1,10 @@
 <?php
 
-namespace engine;
+namespace App;
 
 /**
  * Class Model реализация CRUD взаимодействия с БД
- * @package engine
+ * @package App
  */
 abstract class Model
 {
