@@ -8,6 +8,7 @@ abstract class Product extends Model
 {
 
     public const TABLE = 'products';
+    protected static $salesRevenue;
 
     protected $name;
     protected $description;
@@ -29,9 +30,23 @@ abstract class Product extends Model
     }
 
     /**
-     * Return final coast of product
-     * @param int $amount
-     * @return float - final coast
+     * fixed sale for calc revenue
+     * @param $amount - amount of sale product
+     * @return float - final cost for sale product
      */
-    abstract public function FinalCost($amount = 1): float;
+    public function sale($amount = 1): float
+    {
+        $finalCost = $this->finalCost($amount);
+        static::$salesRevenue += $finalCost;
+        return $finalCost;
+    }
+
+    /**
+     * Get sum of revenue from sale kind of product
+     * @return float - sum of revenue
+     */
+    public static function getRevenue(): float
+    {
+        return static::$salesRevenue;
+    }
 }
