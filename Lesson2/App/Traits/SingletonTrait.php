@@ -16,10 +16,10 @@ trait SingletonTrait
 
     public static function getInstance()
     {
-        if (null === self::$instance) {
-            self::$instance = new self();
+        if (null === static::$instance) {
+            static::$instance = new static();
         }
-        return self::$instance;
+        return static::$instance;
     }
 
 }
