@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Traits\SingletonTrait;
+
 /**
  * Class Db
  * Подключение и выполнение запросов к БД
@@ -11,7 +13,9 @@ class Db
 {
     private $link;
 
-    public function __construct()
+    use SingletonTrait;
+
+    private function __construct()
     {
         $dsn = 'mysql:dbname=shop;host=localhost';
         $this->link = new \PDO($dsn, 'root', '');

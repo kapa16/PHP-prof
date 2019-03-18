@@ -5,132 +5,51 @@ spl_autoload_register(function ($class) {
     require_once __DIR__ . '/../' . $class . '.php';
 });
 
-use App\Models\{Product, Users, Category};
+use App\Models\Products\{DigitalProduct, PieceProduct, WeightProduct};
 
-//Создаем категории товаров
-$categoryMan = new Category('Женская одежда', 0, 0);
-echo $categoryMan->insert();
+//Создаем цифровой товар
+$license = new DigitalProduct(
+    'Лицензия на программу',
+    'Лицензия на программу',
+    1000,
+    1
+);
+$license->insert();
+echo 'Стоимость лицензии на программу: ' . $license->finalCost();
 echo '<br>';
-$categoryShirt = new Category('Рубашки', 5, $categoryMan->id);
-echo $categoryShirt->insert();
-echo '<br>';
+echo 'Продали лицензию на программу: ' . $license->sale();
+echo '<hr>';
 
-//Создаем товар
-$shirt = new Product(
+//Создаем штучный товар
+$shirt = new PieceProduct(
     'Рубашка',
     'Рубашка длинная',
     580,
-    $categoryShirt->id
+    2
 );
-echo $shirt->insert();
+$shirt->insert();
+echo 'Стоимость 3-x рубашек: ' . $shirt->finalCost(3);
 echo '<br>';
+echo 'Продали 3 рубашки: ' . $shirt->sale(3);
+echo '<br>';
+echo 'Продали 2 рубашки: ' . $shirt->sale(2);
 echo '<hr>';
 
-//Получаем категории
-$categories = Category::getAll();
-var_dump($categories);
-//Удаляем категории
-foreach ($categories as $category) {
-    $category->delete();
-}
-$categories = Category::getAll();
-var_dump($categories);
+//Создаем весовой товар
+$sugar = new WeightProduct(
+    'Сахар',
+    'Сахар на развес',
+    45,
+    3
+);
+$sugar->insert();
+echo 'Стоимость 3-x рубашек: ' . $sugar->finalCost(8.745);
+echo '<br>';
+echo 'Продали 3 рубашки: ' . $sugar->sale(8.745);
 echo '<hr>';
 
-
-//Получаем товары
-$products = Product::getAll();
-var_dump($products);
-//Удаляем товары
-foreach ($products as $product) {
-    $product->delete();
-}
-$products = Product::getAll();
-var_dump($categories);
-echo '<hr>';
-
-
-//Загрузка из базы всех пользователей
-$users = Users::getAll();
-var_dump($users);
-
-echo $users[0]->getFullName() ?? 'No users';
-echo '<hr>';
-
-//--------------------------------------------------
-//5. Дан код:
-class A
-{
-    public function foo()
-    {
-        static $x = 0;
-        echo ++$x;
-    }
-}
-
-$a1 = new A();
-$a2 = new A();
-$a1->foo();   //- 1
-$a2->foo();   //- 2
-$a1->foo();   //- 3
-$a2->foo();   //- 4
-echo '<hr>';
-
-//Что он выведет на каждом шаге? Почему?
-//используется статическая переменна $x, она инициализируется при первом вызове метода
-//она не теряет своего значения, когда заканчивается выполнение функции - метода класса
-//она доступна во всех экземплярах класса
-
-
-//------------------------------------------------------
-//Немного изменим п.5:
-class A6
-{
-    public function foo()
-    {
-        static $x = 0;
-        echo ++$x;
-    }
-}
-
-class B extends A6
-{
-}
-
-$a1 = new A6();
-$b1 = new B();
-$a1->foo();     // - 1
-$b1->foo();     // - 1
-$a1->foo();     // - 2
-$b1->foo();     // - 2
-echo '<hr>';
-
-//6. Объясните результаты в этом случае.
-//В классе В создается своя статическая переменная,
-// которая существует независимо от переменной в классе А6,
-// каждая переменная доступна, для экземпляров своих классов
-
-//------------------------------------------------------
-
-//7. *Дан код:
-class A7
-{
-    public function foo()
-    {
-        static $x = 0;
-        echo ++$x;
-    }
-}
-
-class B7 extends A7
-{
-}
-
-$a1 = new A7;
-$b1 = new B7;
-$a1->foo();     // - 1
-$b1->foo();     // - 1
-$a1->foo();     // - 2
-$b1->foo();     // - 2
-//Что он выведет на каждом шаге? Почему?
-//результат как и в п.6, т.к. это такой же код, просто создание новых экземпляров делается без скобок.
+echo 'Всего доход от цифровых товаров: ' . DigitalProduct::getRevenue();
+echo '<br>';
+echo 'Всего доход от штучных товаров: ' . PieceProduct::getRevenue();
+echo '<br>';
+echo 'Всего доход от весовых товаров: ' . WeightProduct::getRevenue();

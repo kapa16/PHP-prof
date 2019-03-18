@@ -26,7 +26,7 @@ abstract class Model
      */
     public static function getAll(): array
     {
-        $db = new Db();
+        $db = Db::getInstance();
         $sql = 'SELECT * FROM `' . static::getTableName() . '`;';
         return $db->query($sql, [], static::class);
     }
@@ -50,7 +50,7 @@ abstract class Model
             $fields[] = "`$key`";
         }
 
-        $db = new Db();
+        $db = Db::getInstance();
         $sql = 'INSERT INTO `' . static::getTableName() . '` 
         (' . implode(', ', $fields) . ') VALUES
         (' . implode(', ', array_keys($params)) . ');';
@@ -73,7 +73,7 @@ abstract class Model
         if (!$this->id) {
             exit('Не задан ID');
         }
-        $db = new Db();
+        $db = Db::getInstance();
         $sql = 'DELETE FROM `' . static::getTableName() . '` WHERE `id`=:id;';
         return $db->exec($sql, [':id' => $this->id]);
     }
