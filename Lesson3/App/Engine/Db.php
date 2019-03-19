@@ -17,8 +17,8 @@ class Db
 
     private function __construct()
     {
-        $dsn = 'mysql:dbname=shop;host=localhost';
-        $this->link = new \PDO($dsn, 'root', '');
+        $dsn = DB_DRIVER . ':dbname=' . DB_NAME . ';host=' . DB_HOST;
+        $this->link = new \PDO($dsn, DB_USER, DB_PASSWORD);
     }
 
     /**
