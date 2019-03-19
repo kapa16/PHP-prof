@@ -2,22 +2,31 @@
 
 namespace App\Views;
 
+use App\Engine\Templater;
+
 class View
 {
     private $data = [];
 
     public function __get($name)
     {
-        // TODO: Implement __get() method.
+        return $this->data[$name] ?? null;
     }
 
     public function __set($name, $value)
     {
-        // TODO: Implement __set() method.
+        $this->data[$name] = $value;
     }
 
     public function __isset($name)
     {
-        // TODO: Implement __isset() method.
+        return isset($this->data[$name]);
+    }
+
+    public function render(string $templateName)
+    {
+        $twig = Templater::getInstance()->twig;
+        $indexTemplate = $twig->load($templateName);
+        return $indexTemplate->render($this->data);
     }
 }
