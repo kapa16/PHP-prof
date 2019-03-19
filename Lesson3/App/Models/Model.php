@@ -34,6 +34,16 @@ abstract class Model
     }
 
     /**
+     * Получает все записи из базы данных, таблицы static::TABLE;
+     */
+    public static function getOne($id): array
+    {
+        $db = Db::getInstance();
+        $sql = 'SELECT * FROM `' . static::getTableName() . '` WHERE `id`=:id;';
+        // TODO change for get ONE
+        return $db->query($sql, [], static::class);
+    }
+    /**
      * вставляет запись в базу данных
      */
     public function insert(): string
