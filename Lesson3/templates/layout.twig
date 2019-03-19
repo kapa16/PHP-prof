@@ -14,13 +14,14 @@
 </header>
 
 <main class="container">
-    {{content}}
+    {% block main %}
+    {% endblock %}
 </main>
 
 {{ include('footer.twig') }}
 
 
-<script src="js/Gallery.js"></script>
-<script src="js/main.js"></script>
+{#<script src="js/Gallery.js"></script>#}
+{#<script src="js/main.js"></script>#}
 </body>
 </html>

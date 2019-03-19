@@ -1,0 +1,21 @@
+{% extends "layout.twig" %}
+
+{% block main %}
+    <div id="gallery">
+        <div class="gallery__wrapper">
+            {% for image in images %}
+            <div class="gallery__image-wrap">
+                <a href="image_view.php?photo-id={{image.id}}">
+                    <img
+                            src="{{image.url}}"
+                            alt="{{image.title}}"
+                            class="gallery__image"
+                            data-id="{{image.id}}"
+                            title="Просмотр полноразмерного изображения"
+                    >
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
