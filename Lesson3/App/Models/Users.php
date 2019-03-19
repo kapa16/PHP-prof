@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Model;
-
 /**
  * Class Users - пользователи сайта
  * @package App\Models

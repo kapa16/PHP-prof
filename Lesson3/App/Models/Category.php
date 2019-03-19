@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Model;
-
 class Category extends Model
 {
     public const TABLE = 'categories';

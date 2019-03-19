@@ -1,6 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Models;
+
+use App\Engine\Db;
 
 /**
  * Class Model реализация CRUD взаимодействия с БД

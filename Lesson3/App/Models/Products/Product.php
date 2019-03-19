@@ -2,7 +2,7 @@
 
 namespace App\Models\Products;
 
-use App\Model;
+use App\Models\Model;
 
 abstract class Product extends Model
 {
