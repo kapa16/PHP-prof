@@ -22,24 +22,50 @@ class Db
         $this->link = new \PDO($dsn, DB_USER, DB_PASSWORD);
     }
 
-    /**
-     * Выполняет запрос на получение данных и создает массив объектов по полученным данным
-     * имена свойств классов должны соответсвтовать именам полей, получаемых из БД
-     * @param $sql - текст запроса
-     * @param $params - параметры для подстановки в запрос
-     * @param $class - имя класса дла создания экземлпяров по полученным данным
-     * @return array - массив объектов
-     */
-    public function query(string $sql, array $params): bool
+    public function exec(string $sql, array $params): bool
     {
         $this->sth = $this->link->prepare($sql);
         return $this->sth->execute($params);
     }
 
-    public function fetchAllClass(string $sql, array $params, string $class): array
+    /**
+     * Подготавливает и вполняет запрос
+     * @param $sql - текст запроса
+     * @param $params - параметры для подстановки в запрос
+     * @param $class - имя класса дла создания экземлпяров по полученным данным
+     * @return bool - выполнен запрос или нет
+     */
+    public function query(string $sql, array $params, string $class): bool
     {
-        $this->query($sql, $params);
-        return $this->sth->fetchAll(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $class);
+        $this->sth = $this->link->prepare($sql);
+        $this->sth->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $class);
+        return $this->sth->execute($params);
+    }
+
+    /**
+     * Возвращает все данные из запроса
+     * @param string $sql - текст запроса
+     * @param array $params - параметры для подстановки в запрос
+     * @param $class - имя класса дла создания экземлпяров по полученным данным
+     * @return array - массив объектов переданного класса
+     */
+    public function queryAll(string $sql, array $params, string $class): array
+    {
+        $this->query($sql, $params, $class);
+        return $this->sth->fetchAll();
+    }
+
+    /**
+     * Возвращает один обект из запроса
+     * @param string $sql - текст запроса
+     * @param array $params - параметры для подстановки в запрос
+     * @param string $class- имя класса дла создания экземлпяров по полученным данным
+     * @return object - объект переданного класса
+     */
+    public function queryOne(string $sql, array $params, string $class): object
+    {
+        $this->query($sql, $params, $class);
+        return $this->sth->fetch();
     }
 
      /**
