@@ -14,13 +14,33 @@ abstract class Model
 
     public $id;
 
-    protected static function getTableName()
+    protected static function getTableName(): string
     {
         if (!static::TABLE) {
             exit('Не задано имя таблицы БД');
         } else {
             return static::TABLE;
         }
+    }
+
+    protected function getQueryParams($excludeVars = []): array
+    {
+        $vars = get_object_vars($this);
+        $data = [
+            'params' => [],
+            'fields' => [],
+            'set' => []
+        ];
+
+        foreach ($vars as $key => $val) {
+            if (in_array($key, $excludeVars, false)) {
+                continue;
+            }
+            $data['params'][":{$key}"] = $val;
+            $data['fields'][] = "`{$key}`";
+            $data['set'][] = "`$key`=:{$key}";
+        }
+        return $data;
     }
 
     /**
@@ -30,7 +50,7 @@ abstract class Model
     {
         $db = Db::getInstance();
         $sql = 'SELECT * FROM `' . static::getTableName() . '`;';
-        return $db->fetchAllClass($sql, [], static::class);
+        return $db->queryAll($sql, [], static::class);
     }
 
     /**
@@ -42,34 +62,22 @@ abstract class Model
     {
         $db = Db::getInstance();
         $sql = 'SELECT * FROM `' . static::getTableName() . '` WHERE `id`=:id;';
-        // TODO change for get ONE
-        return $db->fetchAllClass($sql, [':id' => $id], static::class)[0];
+        return $db->queryOne($sql, [':id' => $id], static::class);
     }
+
     /**
      * вставляет запись в базу данных
      */
     public function insert(): string
     {
-
-
-        $vars = get_object_vars($this);
-
-        $params = [];
-        $fields = [];
-        foreach ($vars as $key => $val) {
-            if ($key === 'id') {
-                continue;
-            }
-            $params[':' . $key] = $val;
-            $fields[] = "`$key`";
-        }
+        $data = $this->getQueryParams(['id']);
 
         $db = Db::getInstance();
         $sql = 'INSERT INTO `' . static::getTableName() . '` 
-        (' . implode(', ', $fields) . ') VALUES
-        (' . implode(', ', array_keys($params)) . ');';
+        (' . implode(', ', $data['fields']) . ') VALUES
+        (' . implode(', ', array_keys($data['params'])) . ');';
 
-        $db->query($sql, $params);
+        $db->query($sql, $data['params']);
 
         if (!$db) {
             return 'Данные не записаны в БД';
@@ -97,6 +105,14 @@ abstract class Model
      */
     public function update()
     {
+        if (!$this->id) {
+            exit('Не задан ID');
+        }
 
+        $data = $this->getQueryParams();
+
+        $db = Db::getInstance();
+        $sql = 'UPDATE `' . static::getTableName() . '` SET ' . implode(', ', $data['set']) . ' WHERE `id`=:id;';
+        return $db->exec($sql, $data['params']);
     }
 }
