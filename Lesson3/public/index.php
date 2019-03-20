@@ -4,7 +4,7 @@ use App\Engine\Templater;
 
 require_once '../vendor/autoload.php';
 
-$gallery = \App\Models\Gallery::getAll();
+$gallery = \App\Models\Image::getAll();
 
 $data = [
     'title' => 'Gallery',

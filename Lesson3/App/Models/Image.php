@@ -9,7 +9,7 @@
 namespace App\Models;
 
 
-class Gallery extends Model
+class Image extends Model
 {
 
     public const TABLE = 'images';
@@ -32,5 +32,11 @@ class Gallery extends Model
         $this->views = $views;
         $this->title = $title;
         $this->size = $size;
+    }
+
+    public function addView(int $count = 1): self
+    {
+        $this->views += $count;
+        return $this;
     }
 }

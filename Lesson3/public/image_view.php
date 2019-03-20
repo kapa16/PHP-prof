@@ -6,12 +6,13 @@ require_once '../vendor/autoload.php';
 
 $id = $_GET['photo-id'] ?? 0;
 
-$gallery = \App\Models\Gallery::getOne($id);
+$image = \App\Models\Image::getOne($id);
+$image->addView()->update();
 
 $data = [
     'title' => 'Gallery',
-    'header' => 'Gallery',
-    'image' => $gallery
+    'header' => 'Full-size image',
+    'image' => $image
 ];
 
 $twig = Templater::getInstance()->twig;
