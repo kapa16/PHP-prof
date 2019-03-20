@@ -4,13 +4,6 @@ use App\Engine\Templater;
 
 require_once '../vendor/autoload.php';
 
-//use \App\Views\View;
-//
-//$view = new View();
-//$view->title = 'Gallery';
-//$view->header = 'Gallery';
-
-//echo $view->render('layout.twig');
 $gallery = \App\Models\Gallery::getAll();
 
 $data = [
