@@ -12,6 +12,7 @@ use App\Traits\SingletonTrait;
 class Db
 {
     private $link;
+    private $sth;
 
     use SingletonTrait;
 
@@ -29,26 +30,19 @@ class Db
      * @param $class - имя класса дла создания экземлпяров по полученным данным
      * @return array - массив объектов
      */
-    public function query(string $sql, array $params, string $class): array
+    public function query(string $sql, array $params): bool
     {
-        $sth = $this->link->prepare($sql);
-        $sth->execute($params);
-        return $sth->fetchAll(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $class);
+        $this->sth = $this->link->prepare($sql);
+        return $this->sth->execute($params);
     }
 
-    /**
-     * Выполняет подготовленный запрос к БД
-     * @param $sql - текст запроса
-     * @param $params - параметры запроса
-     * @return bool - выполнен или нет запрос
-     */
-    public function exec(string $sql, array $params): bool
+    public function fetchAllClass(string $sql, array $params, string $class): array
     {
-        $sth = $this->link->prepare($sql);
-        return $sth->execute($params);
+        $this->query($sql, $params);
+        return $this->sth->fetchAll(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $class);
     }
 
-    /**
+     /**
      * Возвращает id последних вставленных данных
      * @return string - значение ID
      */
