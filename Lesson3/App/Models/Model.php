@@ -30,18 +30,20 @@ abstract class Model
     {
         $db = Db::getInstance();
         $sql = 'SELECT * FROM `' . static::getTableName() . '`;';
-        return $db->query($sql, [], static::class);
+        return $db->fetchAllClass($sql, [], static::class);
     }
 
     /**
      * Получает все записи из базы данных, таблицы static::TABLE;
+     * @param $id
+     * @return
      */
-    public static function getOne($id): array
+    public static function getOne($id)
     {
         $db = Db::getInstance();
         $sql = 'SELECT * FROM `' . static::getTableName() . '` WHERE `id`=:id;';
         // TODO change for get ONE
-        return $db->query($sql, [], static::class);
+        return $db->fetchAllClass($sql, [':id' => $id], static::class)[0];
     }
     /**
      * вставляет запись в базу данных
@@ -67,7 +69,7 @@ abstract class Model
         (' . implode(', ', $fields) . ') VALUES
         (' . implode(', ', array_keys($params)) . ');';
 
-        $db->exec($sql, $params);
+        $db->query($sql, $params);
 
         if (!$db) {
             return 'Данные не записаны в БД';
@@ -87,7 +89,7 @@ abstract class Model
         }
         $db = Db::getInstance();
         $sql = 'DELETE FROM `' . static::getTableName() . '` WHERE `id`=:id;';
-        return $db->exec($sql, [':id' => $this->id]);
+        return $db->query($sql, [':id' => $this->id]);
     }
 
     /**

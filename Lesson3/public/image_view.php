@@ -4,19 +4,14 @@ use App\Engine\Templater;
 
 require_once '../vendor/autoload.php';
 
-//use \App\Views\View;
-//
-//$view = new View();
-//$view->title = 'Gallery';
-//$view->header = 'Gallery';
+$id = $_GET['photo-id'] ?? 0;
 
-//echo $view->render('layout.twig');
-$gallery = \App\Models\Gallery::ge();
+$gallery = \App\Models\Gallery::getOne($id);
 
 $data = [
     'title' => 'Gallery',
     'header' => 'Gallery',
-    'images' => $gallery
+    'image' => $gallery
 ];
 
 $twig = Templater::getInstance()->twig;

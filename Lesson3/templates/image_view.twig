@@ -1,11 +1,13 @@
 {% extends "layout.twig" %}
 
-<a href="/">
-    <img src="{{image.url}}"
-         alt="{{image.title}}"
-         class="gallery__full-image"
-         data-id="{{image.id}}"
-         title="На главную"
-    >
-</a>
-<p>Количество просмотров: <span>{{image.views}}</span></p>
+{% block main %}
+    <a href="/">
+        <img src="{{image.url}}"
+             alt="{{image.title}}"
+             class="gallery__full-image"
+             data-id="{{image.id}}"
+             title="На главную"
+        >
+    </a>
+    <p>Количество просмотров: <span>{{image.views}}</span></p>
+{% endblock %}
