@@ -1,20 +1,11 @@
 <?php
 
-use App\Engine\Templater;
+use App\Controllers\GalleryImageController;
 
 require_once '../vendor/autoload.php';
 
 $id = $_GET['photo-id'] ?? 0;
+$controller = new GalleryImageController('image_view.twig');
+echo $controller->actionSingleImage($id);
 
-$image = \App\Models\Image::getOne($id);
-$image->addView()->update();
 
-$data = [
-    'title' => 'Gallery',
-    'header' => 'Full-size image',
-    'image' => $image
-];
-
-$twig = Templater::getInstance()->twig;
-$indexTemplate = $twig->load('image_view.twig');
-echo $indexTemplate->render($data);
