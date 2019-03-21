@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: kapa
- * Date: 19.03.2019
- * Time: 22:57
- */
 
 namespace App\Models;
-
 
 class Image extends Model
 {
@@ -20,7 +13,7 @@ class Image extends Model
     public $size;
 
     /**
-     * Gallery constructor.
+     * Image constructor.
      * @param $url
      * @param $views
      * @param $title
@@ -34,7 +27,7 @@ class Image extends Model
         $this->size = $size;
     }
 
-    public function addView(int $count = 1): self
+    public function increaseImageViews(int $count = 1): self
     {
         $this->views += $count;
         return $this;
