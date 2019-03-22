@@ -12,43 +12,63 @@ use App\Traits\SingletonTrait;
 class Db
 {
     private $link;
+    private $sth;
 
     use SingletonTrait;
 
     private function __construct()
     {
-        $dsn = 'mysql:dbname=shop;host=localhost';
-        $this->link = new \PDO($dsn, 'root', '');
+        $dsn = DB_DRIVER . ':dbname=' . DB_NAME . ';host=' . DB_HOST;
+        $this->link = new \PDO($dsn, DB_USER, DB_PASSWORD);
+    }
+
+    public function exec(string $sql, array $params): bool
+    {
+        $this->sth = $this->link->prepare($sql);
+        return $this->sth->execute($params);
     }
 
     /**
-     * Выполняет запрос на получение данных и создает массив объектов по полученным данным
-     * имена свойств классов должны соответсвтовать именам полей, получаемых из БД
+     * Подготавливает и вполняет запрос
      * @param $sql - текст запроса
      * @param $params - параметры для подстановки в запрос
      * @param $class - имя класса дла создания экземлпяров по полученным данным
-     * @return array - массив объектов
+     * @return bool - выполнен запрос или нет
      */
-    public function query(string $sql, array $params, string $class): array
+    public function query(string $sql, array $params, string $class): bool
     {
-        $sth = $this->link->prepare($sql);
-        $sth->execute($params);
-        return $sth->fetchAll(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $class);
+        $this->sth = $this->link->prepare($sql);
+        $this->sth->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $class);
+        return $this->sth->execute($params);
     }
 
     /**
-     * Выполняет подготовленный запрос к БД
-     * @param $sql - текст запроса
-     * @param $params - параметры запроса
-     * @return bool - выполнен или нет запрос
+     * Возвращает все данные из запроса
+     * @param string $sql - текст запроса
+     * @param array $params - параметры для подстановки в запрос
+     * @param $class - имя класса дла создания экземлпяров по полученным данным
+     * @return array - массив объектов переданного класса
      */
-    public function exec(string $sql, array $params): bool
+    public function queryAll(string $sql, array $params, string $class): array
     {
-        $sth = $this->link->prepare($sql);
-        return $sth->execute($params);
+        $this->query($sql, $params, $class);
+        return $this->sth->fetchAll();
     }
 
     /**
+     * Возвращает один обект из запроса
+     * @param string $sql - текст запроса
+     * @param array $params - параметры для подстановки в запрос
+     * @param string $class- имя класса дла создания экземлпяров по полученным данным
+     * @return object - объект переданного класса
+     */
+    public function queryOne(string $sql, array $params, string $class): object
+    {
+        $this->query($sql, $params, $class);
+        return $this->sth->fetch();
+    }
+
+     /**
      * Возвращает id последних вставленных данных
      * @return string - значение ID
      */

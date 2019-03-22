@@ -14,7 +14,7 @@ abstract class Model
 
     public $id;
 
-    protected static function getTableName()
+    protected static function getTableName(): string
     {
         if (!static::TABLE) {
             exit('Не задано имя таблицы БД');
@@ -23,14 +23,62 @@ abstract class Model
         }
     }
 
+    protected function validateId(): void
+    {
+        if (!$this->id) {
+            exit('Не задан ID');
+        }
+    }
+
+    protected function getQueryParams($excludeVars = []): array
+    {
+        $vars = get_object_vars($this);
+        $data = [
+            'params' => [],
+            'fields' => [],
+            'set'    => [],
+        ];
+
+        foreach ($vars as $key => $val) {
+            if (in_array($key, $excludeVars, false)) {
+                continue;
+            }
+            $data['params'][":{$key}"] = $val;
+            $data['fields'][] = "`{$key}`";
+            $data['set'][] = "`$key`=:{$key}";
+        }
+        return $data;
+    }
+
     /**
      * Получает все записи из базы данных, таблицы static::TABLE;
+     * @param array $sortFields
+     * @param bool $reversSort
+     * @return array
      */
-    public static function getAll(): array
+    public static function getAll($sortFields = [], $reversSort = false): array
     {
         $db = Db::getInstance();
-        $sql = 'SELECT * FROM `' . static::getTableName() . '`;';
-        return $db->query($sql, [], static::class);
+        $sql = 'SELECT * FROM `' . static::getTableName() . '`';
+
+        if (count($sortFields) > 0) {
+            $strSortFields = implode(', ', $sortFields);
+            $sql .= " ORDER BY {$strSortFields} " . ($reversSort ? 'ASC' : 'DESC');
+        }
+
+        return $db->queryAll($sql, [], static::class);
+    }
+
+    /**
+     * Получает все записи из базы данных, таблицы static::TABLE;
+     * @param $id
+     * @return
+     */
+    public static function getOne($id)
+    {
+        $db = Db::getInstance();
+        $sql = 'SELECT * FROM `' . static::getTableName() . '` WHERE `id`=:id;';
+        return $db->queryOne($sql, [':id' => $id], static::class);
     }
 
     /**
@@ -38,26 +86,14 @@ abstract class Model
      */
     public function insert(): string
     {
-
-
-        $vars = get_object_vars($this);
-
-        $params = [];
-        $fields = [];
-        foreach ($vars as $key => $val) {
-            if ($key === 'id') {
-                continue;
-            }
-            $params[':' . $key] = $val;
-            $fields[] = "`$key`";
-        }
+        $data = $this->getQueryParams(['id']);
 
         $db = Db::getInstance();
         $sql = 'INSERT INTO `' . static::getTableName() . '` 
-        (' . implode(', ', $fields) . ') VALUES
-        (' . implode(', ', array_keys($params)) . ');';
+        (' . implode(', ', $data['fields']) . ') VALUES
+        (' . implode(', ', array_keys($data['params'])) . ');';
 
-        $db->exec($sql, $params);
+        $db->query($sql, $data['params']);
 
         if (!$db) {
             return 'Данные не записаны в БД';
@@ -72,12 +108,11 @@ abstract class Model
      */
     public function delete(): bool
     {
-        if (!$this->id) {
-            exit('Не задан ID');
-        }
+        $this->validateId();
+
         $db = Db::getInstance();
         $sql = 'DELETE FROM `' . static::getTableName() . '` WHERE `id`=:id;';
-        return $db->exec($sql, [':id' => $this->id]);
+        return $db->query($sql, [':id' => $this->id]);
     }
 
     /**
@@ -85,6 +120,12 @@ abstract class Model
      */
     public function update()
     {
+        $this->validateId();
 
+        $data = $this->getQueryParams();
+
+        $db = Db::getInstance();
+        $sql = 'UPDATE `' . static::getTableName() . '` SET ' . implode(', ', $data['set']) . ' WHERE `id`=:id;';
+        return $db->exec($sql, $data['params']);
     }
 }
