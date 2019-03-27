@@ -19,6 +19,23 @@ abstract class Model
 
     abstract protected static function getTableName();
 
+    public function __set($name, $value)
+    {
+        if (isset($this->$name)) {
+            $this->$name = $value;
+        }
+    }
+
+    public function __get($name)
+    {
+        return $this->$name ?? null;
+    }
+
+    public function __isset($name)
+    {
+        return isset($this->$name);
+    }
+
     protected function validateId(): void
     {
         if (!$this->id) {
@@ -68,7 +85,7 @@ abstract class Model
     }
 
     /**
-     * Получает все записи из базы данных, таблицы static::TABLE;
+     * Получает все записи из базы данных
      * @return array
      */
     public static function getAll(): array
@@ -80,7 +97,7 @@ abstract class Model
     }
 
     /**
-     * Получает лимитированное количестов записей из базы данных, таблицы static::TABLE;
+     * Получает лимитированное количестов записей из базы данных
      * @param $limitFrom
      * @param $limitCount
      * @return array
@@ -96,15 +113,16 @@ abstract class Model
     }
 
     /**
-     * Получает все записи из базы данных, таблицы static::TABLE;
-     * @param $id
-     * @return
+     * Retrieves a record from a database by unique field
+     * @param $fieldName
+     * @param $fieldValue
+     * @return mixed
      */
-    public static function getOne($id)
+    public static function getOne($fieldName, $fieldValue)
     {
         $db = Db::getInstance();
-        $sql = 'SELECT * FROM `' . static::getTableName() . '` WHERE `id`=:id;';
-        return $db->queryOne($sql, [':id' => $id], static::class);
+        $sql = 'SELECT * FROM `' . static::getTableName() . "` WHERE `$fieldName`=:$fieldName;";
+        return $db->queryOne($sql, [":$fieldName" => $fieldValue], static::class);
     }
 
     public static function getCountRows()
