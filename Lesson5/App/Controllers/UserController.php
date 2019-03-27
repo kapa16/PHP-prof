@@ -2,30 +2,52 @@
 
 namespace App\Controllers;
 
-use App\Engine\Auth;
 use App\Models\User;
 
-class AuthController extends Controller
+class UserController extends Controller
 {
     protected const TEMPLATE_NAME = 'login.twig';
 
-    public function login($data = [])
+    public function login(): void
     {
+        $params = [];
+        $error = $this->data['error'] ?? '';
+        $errors = [
+            'nodata' => 'Enter login and password',
+            'nouser' => 'Login or password wrong',
+        ];
 
-        echo $this->render([]);
+        if (!empty($errors[$error])) {
+            $params['error'] = $errors[$error];
+        }
+
+        echo $this->render($params);
     }
 
-    public function auth()
+    public function personal()
+    {
+        echo $this->render($params);
+    }
+
+    private function loginError($error): void
+    {
+        header('Location: /user/login?error=' . $error);
+        exit;
+    }
+
+    public function authentication(): void
     {
         $login = $_POST['login'] ?? '';
-        $params = [];
+        $password = $_POST['password'] ?? '';
 
-        if (!empty($login)) {
-            return $this->login();
+        if (empty($login) || empty($password)) {
+            $this->loginError('nodata');
         }
         $user = User::getOne('login', $login);
         if (!$user) {
-            $params['error'] = 'Неверный логин или пароль';
+            $this->loginError('nouser');
         }
+        $user->authentication($password);
     }
+
 }

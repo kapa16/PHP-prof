@@ -62,7 +62,7 @@ class Db
      * @param string $class- имя класса дла создания экземлпяров по полученным данным
      * @return object - объект переданного класса
      */
-    public function queryOne(string $sql, array $params, string $class): object
+    public function queryOne(string $sql, array $params, string $class)
     {
         $this->queryClass($sql, $params, $class);
         return $this->sth->fetch();

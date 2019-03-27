@@ -1,16 +1,19 @@
+{% extends "layout.twig" %}
+
+{% block main %}
 <div class="row justify-content-center">
     <div class="col-4 p-2">
-        {{PERSONALAREATEXT}}
+        {{title}}
     </div>
 </div>
 <div class="row justify-content-center">
     <div class="col-4 p-2">
-        Имя: {{PERSONALAREANAME}}
+        Имя: {{user.name}}
     </div>
 </div>
 <div class="row justify-content-center">
     <div class="col-4 p-2">
-        Логин: {{PERSONALAREALOGIN}}
+        Логин: {{user.lastname}}
     </div>
 </div>
-{{ORDERS}}
+{% endblock %}

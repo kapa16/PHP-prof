@@ -10,6 +10,7 @@ abstract class Controller
     protected const TEMPLATE_NAME = '';
     /** @var Environment */
     protected $twig;
+    public $data = [];
 
     /**
      * Controller constructor.

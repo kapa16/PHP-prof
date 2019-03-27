@@ -135,7 +135,7 @@ abstract class Model
     /**
      * вставляет запись в базу данных
      */
-    public function insert(): string
+    public function insert(): bool
     {
         $data = $this->getQueryParams(['id']);
 
@@ -144,14 +144,14 @@ abstract class Model
         (' . implode(', ', $data['fields']) . ') VALUES
         (' . implode(', ', array_keys($data['params'])) . ');';
 
-        $db->query($sql, $data['params']);
+        $db->exec($sql, $data['params']);
 
         if (!$db) {
-            return 'Данные не записаны в БД';
+            return false;
         }
 
         $this->id = $db->getInsertedId();
-        return 'Данные записаны в БД';
+        return true;
     }
 
     /**

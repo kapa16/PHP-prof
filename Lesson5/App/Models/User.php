@@ -35,4 +35,25 @@ class User extends Model
     {
         return 'users';
     }
+
+    public function authentication($password)
+    {
+        if (!password_verify($password, $this->password)) {
+            return false;
+        }
+        $this->createSession();
+        return true;
+    }
+
+    public function createSession(): void
+    {
+        $_SESSION['user'] = $this;
+        unset($_SESSION['user']['password']);
+    }
+
+    public function clearSession(): void
+    {
+        unset($_SESSION['user']);
+    }
+
 }

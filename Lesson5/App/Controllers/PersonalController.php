@@ -9,7 +9,12 @@
 namespace App\Controllers;
 
 
-class PersonalController
+class PersonalController extends Controller
 {
+    protected const TEMPLATE_NAME = 'personal_area.twig';
 
+    public function index()
+    {
+        echo $this->render(['user' => $_SESSION['user']]);
+    }
 }
