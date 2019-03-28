@@ -6,8 +6,8 @@ class IndexController extends Controller
 {
     protected const TEMPLATE_NAME = 'gallery.twig';
 
-    public function index($data = []): void
+    public function index(): void
     {
-        echo $this->render([]);
+        echo $this->render();
     }
 }

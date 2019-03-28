@@ -16,10 +16,10 @@ class RegistrationController extends Controller
 
     public function index(): void
     {
-        echo $this->render([]);
+        echo $this->render();
     }
 
-    public function send()
+    public function send(): void
     {
         $user = User::registration($_POST);
         $page = $user->authorized() ? 'personal' : 'registration';
