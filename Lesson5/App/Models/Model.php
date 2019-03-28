@@ -69,6 +69,9 @@ abstract class Model
             $data['params'][":{$key}"] = $val;
             $data['fields'][] = "`{$key}`";
             $data['set'][] = "`$key`=:{$key}";
+            if ($key === 'password') {
+                $data['params'][":{$key}"] = password_hash($val, PASSWORD_BCRYPT);
+            }
         }
         return $data;
     }
