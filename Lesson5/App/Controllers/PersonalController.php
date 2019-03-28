@@ -19,6 +19,11 @@ class PersonalController extends Controller
         if (!$authenticatedUser) {
             header('Location: /login');
         }
-        echo $this->render(['user' => $authenticatedUser]);
+        $params = [
+            'header' => 'Personal area',
+            'user' => $authenticatedUser,
+            'pages' => $_SESSION['visited_pages']
+        ];
+        echo $this->render($params);
     }
 }

@@ -66,7 +66,7 @@ abstract class Model
             if (in_array($key, $this->excludeQueryParams, false)) {
                 continue;
             }
-            $data['params'][":{$key}"] = $val;
+            $data['params'][":{$key}"] = htmlspecialchars($val);
             $data['fields'][] = "`{$key}`";
             $data['set'][] = "`$key`=:{$key}";
             if ($key === 'password') {

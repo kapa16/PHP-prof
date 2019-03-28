@@ -17,7 +17,7 @@ class Product extends Model
         return 'products';
     }
 
-    public static function fillTestProduct()
+    public static function fillTestProduct(): void
     {
         $productData = [];
         for ($i = 1; $i <= 20; $i++) {
