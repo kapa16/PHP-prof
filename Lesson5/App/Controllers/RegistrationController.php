@@ -21,16 +21,8 @@ class RegistrationController extends Controller
 
     public function send()
     {
-        $login = $_POST['login'];
-        $password = $_POST['password'];
-        $name = $_POST['name'];
-        $lastname = $_POST['lastname'];
-        $email = $_POST['email'];
-
-        $user = new User($login, $password, $name, $lastname, $email);
-        if ($user->insert()) {
-            $user->createSession();
-            header('Location: /personal');
-        }
+        $user = User::registration($_POST);
+        $page = $user->authorized() ? 'personal' : 'registration';
+        header('Location: /' . $page);
     }
 }

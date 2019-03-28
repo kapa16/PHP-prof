@@ -14,46 +14,47 @@ class User extends Model
     public $lastname;
     public $email;
 
-    /**
-     * User constructor.
-     * @param $login
-     * @param $password
-     * @param $name
-     * @param $lastname
-     * @param $email
-     */
-    public function __construct($login = null, $password = null, $name = null, $lastname = null, $email = null)
-    {
-        $this->login = $login;
-        $this->password = $password;
-        $this->name = $name;
-        $this->lastname = $lastname;
-        $this->email = $email;
-    }
-
     protected static function getTableName(): string
     {
         return 'users';
     }
 
-    public function authentication($password)
+    public function authentication(string $password): void
     {
         if (!password_verify($password, $this->password)) {
-            return false;
+            return;
         }
         $this->createSession();
-        return true;
+    }
+
+    public static function registration(array $userData = []): User
+    {
+        $user = new self($userData);
+        if ($user->insert()) {
+            $user->createSession();
+        }
+        return $user;
+    }
+
+    public function authorized(): bool
+    {
+        return !empty($_SESSION['user']);
     }
 
     public function createSession(): void
     {
         $_SESSION['user'] = $this;
-        unset($_SESSION['user']['password']);
+        unset($_SESSION['user']->password);
     }
 
-    public function clearSession(): void
+    public static function logout(): void
     {
         unset($_SESSION['user']);
     }
 
+    public function insert(): bool
+    {
+        $this->excludeQueryParams[] = 'passwordCheck';
+        return parent::insert();
+    }
 }

@@ -13,8 +13,12 @@ class PersonalController extends Controller
 {
     protected const TEMPLATE_NAME = 'personal_area.twig';
 
-    public function index()
+    public function index(): void
     {
-        echo $this->render(['user' => $_SESSION['user']]);
+        $authenticatedUser = $_SESSION['user'] ?? '';
+        if (!$authenticatedUser) {
+            header('Location: /login');
+        }
+        echo $this->render(['user' => $authenticatedUser]);
     }
 }

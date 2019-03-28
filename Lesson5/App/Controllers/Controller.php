@@ -2,14 +2,12 @@
 
 namespace App\Controllers;
 
-use App\Engine\Templater;
-use Twig\Environment;
+use App\Views\View;
 
 abstract class Controller
 {
     protected const TEMPLATE_NAME = '';
-    /** @var Environment */
-    protected $twig;
+    protected $view;
     public $data = [];
 
     /**
@@ -17,20 +15,11 @@ abstract class Controller
      */
     public function __construct()
     {
-        $this->twig = Templater::getInstance()->twig;
     }
 
-    /**
-     * Return view from template
-     * @param $data array parameters for template
-     * @return mixed
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
-     */
-    protected function render($data)
+    protected function render(array $data = []): string
     {
-        $indexTemplate = $this->twig->load(static::TEMPLATE_NAME);
-        return $indexTemplate->render($data);
+        $this->view = new View($data);
+        return $this->view->render(static::TEMPLATE_NAME);
     }
 }

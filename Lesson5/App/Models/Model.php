@@ -16,8 +16,18 @@ abstract class Model
     public static $reversSort = false;
 
     public $id;
+    protected $excludeQueryParams;
 
     abstract protected static function getTableName();
+
+    public function __construct($modelData = [])
+    {
+        $fields = get_class_vars(static::class);
+        foreach ($fields as $fieldName => $field) {
+            $this->$fieldName = $modelData[$fieldName] ?? '';
+        }
+        $this->excludeQueryParams = ['excludeQueryParams'];
+    }
 
     public function __set($name, $value)
     {
@@ -43,7 +53,7 @@ abstract class Model
         }
     }
 
-    protected function getQueryParams($excludeVars = []): array
+    protected function getQueryParams(): array
     {
         $vars = get_object_vars($this);
         $data = [
@@ -53,7 +63,7 @@ abstract class Model
         ];
 
         foreach ($vars as $key => $val) {
-            if (in_array($key, $excludeVars, false)) {
+            if (in_array($key, $this->excludeQueryParams, false)) {
                 continue;
             }
             $data['params'][":{$key}"] = $val;
@@ -137,21 +147,20 @@ abstract class Model
      */
     public function insert(): bool
     {
-        $data = $this->getQueryParams(['id']);
+        $this->excludeQueryParams[] = 'id';
+        $data = $this->getQueryParams();
 
         $db = Db::getInstance();
         $sql = 'INSERT INTO `' . static::getTableName() . '` 
         (' . implode(', ', $data['fields']) . ') VALUES
         (' . implode(', ', array_keys($data['params'])) . ');';
 
-        $db->exec($sql, $data['params']);
+        $result = $db->exec($sql, $data['params']);
 
-        if (!$db) {
-            return false;
+        if (!$result) {
+            $this->id = $db->getInsertedId();
         }
-
-        $this->id = $db->getInsertedId();
-        return true;
+        return $result;
     }
 
     /**

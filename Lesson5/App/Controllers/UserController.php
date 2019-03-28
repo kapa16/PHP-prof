@@ -24,11 +24,6 @@ class UserController extends Controller
         echo $this->render($params);
     }
 
-    public function personal()
-    {
-        echo $this->render($params);
-    }
-
     private function loginError($error): void
     {
         header('Location: /user/login?error=' . $error);
@@ -48,6 +43,10 @@ class UserController extends Controller
             $this->loginError('nouser');
         }
         $user->authentication($password);
+        if (!$user->authorized()){
+            $this->loginError('nouser');
+        }
+        header('Location: /personal');
     }
 
 }

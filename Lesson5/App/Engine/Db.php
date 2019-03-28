@@ -12,6 +12,7 @@ use App\Traits\SingletonTrait;
 class Db
 {
     private $link;
+    /** @var \PDOStatement */
     private $sth;
 
     use SingletonTrait;
