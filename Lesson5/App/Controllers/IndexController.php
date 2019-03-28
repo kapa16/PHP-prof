@@ -8,6 +8,6 @@ class IndexController extends Controller
 
     public function index(): void
     {
-        echo $this->render();
+        echo $this->render(['header' => 'Gallery']);
     }
 }
