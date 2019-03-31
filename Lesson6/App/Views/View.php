@@ -14,7 +14,7 @@ class View
     public function __construct($data = [])
     {
         $this->data = $data;
-        $this->data['auth'] = $_SESSION['user'] ?: '';
+        $this->data['auth'] = $_SESSION['user'] ?? '';
         $this->twig = Templater::getInstance()->twig;
     }
 
