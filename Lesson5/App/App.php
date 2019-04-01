@@ -29,6 +29,7 @@ class App
         if(!method_exists($controller, $method)) {
             throw new \RuntimeException('Метод не найден');
         }
-        $controller->$method($_REQUEST);
+        $controller->data = $_REQUEST;
+        $controller->$method();
     }
 }
