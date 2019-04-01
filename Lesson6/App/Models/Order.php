@@ -45,4 +45,22 @@ class Order extends Model
 
         return true;
     }
+
+    public function getFullOrders()
+    {
+        $sql = "SELECT * FROM (SELECT `order`.`id`, os.`status`, `status_id`, `create_data` FROM `order`
+LEFT JOIN `order_status` os ON `order`.`status_id` = os.`id`) AS ord
+LEFT JOIN
+(SELECT `products`.`id` AS 'id',
+        `order_id`,
+       `name`,
+       `quantity`,
+       `price`,
+       `order_product`.`id` AS 'order_product_id',
+       `order_product`.`deleted` AS 'deleted'
+FROM `order_product`
+         LEFT JOIN `products` ON `products`.`id` = `order_product`.`product_id`) as prod
+ON ord.id = prod.order_id
+ORDER BY `create_data`";
+    }
 }

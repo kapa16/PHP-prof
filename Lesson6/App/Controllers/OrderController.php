@@ -22,15 +22,18 @@ class OrderController extends Controller
         $sortFields = [' create_data DESC'];
         $orders = Order::getAllArray(null, $filter, ' AND ', $sortFields);
 
-        $filter = [];
+
         foreach ($orders as &$order) {
+            $filter = [];
             $filter[] = [
                 'col'   => 'order_id',
                 'oper'  => '=',
                 'value' => $order['id'],
             ];
             $order['products'] = OrderProduct::getAllArray(null, $filter);
+            var_dump($filter);
         }
+        unset($order);
         return $orders;
     }
 }
