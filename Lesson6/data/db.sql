@@ -201,6 +201,7 @@ DROP TABLE IF EXISTS `users`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `role` tinyint DEFAULT 0,
   `name` varchar(255) NOT NULL COMMENT 'Имя покупателя',
   `create_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `change_date` datetime DEFAULT NULL,

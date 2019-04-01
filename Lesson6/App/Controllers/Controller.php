@@ -6,7 +6,7 @@ use App\Views\View;
 
 abstract class Controller
 {
-    protected const TEMPLATE_NAME = '';
+    protected $template = '';
     protected $view;
     public $data = [];
     protected static $visitedPages = [];
@@ -15,7 +15,7 @@ abstract class Controller
     {
         $this->logVisitedPages();
         $this->view = new View($data);
-        return $this->view->render(static::TEMPLATE_NAME);
+        return $this->view->render($this->template);
     }
 
     protected function logVisitedPages(): void

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Engine\Db;
+use RuntimeException;
 
 /**
  * Class Model реализация CRUD взаимодействия с БД
@@ -10,8 +11,6 @@ use App\Engine\Db;
  */
 abstract class Model
 {
-    public const TABLE = '';
-
     public static $sortFields = [];
     public static $reversSort = false;
 
@@ -24,7 +23,7 @@ abstract class Model
     {
         $fields = get_class_vars(static::class);
         foreach ($fields as $fieldName => $field) {
-            $this->$fieldName = $modelData[$fieldName] ?? '';
+            $this->$fieldName = $modelData[$fieldName] ?? null;
         }
         $this->excludeQueryParams = ['excludeQueryParams'];
     }
@@ -76,13 +75,69 @@ abstract class Model
         return $data;
     }
 
-    protected static function generateSelectQuery(int $limitFrom = null, int $limitCount = null): string
+    protected static function generateSelectQuery(
+        ?array $select = [],
+        ?array $filters = [],
+        string $filterLogicalOperator = 'AND',
+        ?array $sortFields = [],
+        int $limitFrom = null,
+        int $limitCount = null): string
     {
-        $sql = 'SELECT * FROM `' . static::getTableName() . '`';
+        $sql = 'SELECT ';
 
-        if (count(static::$sortFields) > 0) {
-            $strSortFields = implode(', ', static::$sortFields);
-            $sql .= " ORDER BY {$strSortFields} " . (static::$reversSort ? 'ASC' : 'DESC');
+        if (empty($select)) {
+            $select = ['*'];
+        }
+
+        //Добавим запрос только необходимые столбцы
+        $queries = [];
+        foreach ($select as $key => $value) {
+            if (is_int($key)) {
+                $queries[] = $value;
+            } else {
+                //Если запрос выглядит как [col => alias] то создаем запрос `col as alias`
+                $queries[] = "$key as '$value'";
+            }
+        }
+        $sql .= implode(', ', $queries);
+
+        $sql .= ' FROM `' . static::getTableName() . '`';
+
+        //Выборка (WHERE)
+        if (!empty($filters)) {
+            $queries = [];
+            //Проходимся по всем фильтрам
+            foreach ($filters as $filter) {
+                //Перебираем оператор
+                switch ($filter['oper']) {
+                    case 'IS NULL':
+                    case 'IS NOT NULL':
+                        //Для работы с NULL $value не нужно
+                        $queries[] = "{$filter['col']} {$filter['oper']}";
+                        break;
+                    case 'IN':
+                    case 'NOT IN':
+                        //Для работы с IN $value должно иметь вид (1,2,3)
+                        $value = $filter['value'];
+                        if (is_array($value)) {
+                            $value = '(' . implode(', ', $value) . ')';
+                        }
+                        $queries[] = "{$filter['col']} {$filter['oper']} {$value}";
+                        break;
+                    default:
+                        //В остальных случаях без обработки
+                        $queries[] = "{$filter['col']} {$filter['oper']} '{$filter['value']}'";
+                        break;
+                };
+            }
+            //Добавляем выборку в запрос
+            $sql .= ' WHERE ' . implode(' ' . $filterLogicalOperator . ' ', $queries);
+        }
+
+
+        if (count($sortFields) > 0) {
+            $strSortFields = implode(', ', $sortFields);
+            $sql .= " ORDER BY {$strSortFields}";
         }
 
 //        if ($limitCount) {
@@ -99,26 +154,51 @@ abstract class Model
 
     /**
      * Получает все записи из базы данных
+     * @param array|null $select
+     * @param array|null $filters
+     * @param string $filterLogicalOperator
+     * @param array|null $sortFields
      * @return array
      */
-    public static function getAll(): array
+    public static function getAll(
+        ?array $select = [],
+        ?array $filters = [],
+        string $filterLogicalOperator = ' AND ',
+        ?array $sortFields = []
+    ): array
     {
         $db = Db::getInstance();
-        $sql = static::generateSelectQuery();
-
+        $sql = static::generateSelectQuery($select, $filters, $filterLogicalOperator, $sortFields);
         return $db->queryAll($sql, [], static::class);
+    }
+
+    public static function getAllArray(
+        ?array $select = [],
+        ?array $filters = [],
+        string $filterLogicalOperator = ' AND ',
+        ?array $sortFields = []
+    ): array
+    {
+        $db = Db::getInstance();
+        $sql = static::generateSelectQuery($select, $filters, $filterLogicalOperator, $sortFields);
+        return $db->queryAllArray($sql, []);
     }
 
     /**
      * Получает лимитированное количестов записей из базы данных
+     * @param array|null $sortFields
      * @param $limitFrom
      * @param $limitCount
      * @return array
      */
-    public static function getLimit($limitFrom, $limitCount): array
+    public static function getLimit(
+        ?array $sortFields = [],
+        $limitFrom = null,
+        $limitCount = null): array
     {
+        /** @var Db $db */
         $db = Db::getInstance();
-        $sql = static::generateSelectQuery($limitFrom, $limitCount);
+        $sql = static::generateSelectQuery([], [], null, $sortFields, $limitFrom, $limitCount);
         // TODO Почему не работает подстановка
 //        $params = [':from' => $limitFrom, ':count' => $limitCount];
         $params = [];
@@ -133,6 +213,7 @@ abstract class Model
      */
     public static function getOne($fieldName, $fieldValue)
     {
+        /** @var Db $db */
         $db = Db::getInstance();
         $sql = 'SELECT * FROM `' . static::getTableName() . "` WHERE `$fieldName`=:$fieldName;";
         return $db->queryOne($sql, [":$fieldName" => $fieldValue], static::class);
@@ -140,9 +221,18 @@ abstract class Model
 
     public static function getCountRows()
     {
+        /** @var Db $db */
         $db = Db::getInstance();
         $sql = 'SELECT COUNT(*) count FROM `' . static::getTableName() . '`';
         return $db->queryOneAssoc($sql, [])['count'];
+    }
+
+    public function save(): bool
+    {
+        if ($this->id) {
+            return $this->update();
+        }
+        return $this->insert();
     }
 
     /**
@@ -151,8 +241,12 @@ abstract class Model
     public function insert(): bool
     {
         $this->excludeQueryParams[] = 'id';
+        $this->excludeQueryParams[] = 'deleted';
+        $this->excludeQueryParams[] = 'create_data';
+        $this->excludeQueryParams[] = 'change_data';
         $data = $this->getQueryParams();
 
+        /** @var Db $db */
         $db = Db::getInstance();
         $sql = 'INSERT INTO `' . static::getTableName() . '` 
         (' . implode(', ', $data['fields']) . ') VALUES
@@ -161,8 +255,10 @@ abstract class Model
         $result = $db->exec($sql, $data['params']);
 
         if (!$result) {
-            $this->id = $db->getInsertedId();
+            throw new RuntimeException('Error insert to DB');
         }
+        $this->id = $db->getInsertedId();
+
         return $result;
     }
 
@@ -173,9 +269,10 @@ abstract class Model
     {
         $this->validateId();
 
+        /** @var Db $db */
         $db = Db::getInstance();
         $sql = 'DELETE FROM `' . static::getTableName() . '` WHERE `id`=:id;';
-        return $db->query($sql, [':id' => $this->id]);
+        return $db->exec($sql, [':id' => $this->id]);
     }
 
     /**

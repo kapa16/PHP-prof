@@ -6,9 +6,9 @@ use App\Models\Product;
 
 class ProductController extends Controller
 {
-    protected const TEMPLATE_NAME = 'products.twig';
+    protected $template = 'products.twig';
 
-    public function index(): void
+    public function index(): string
     {
         $products = Product::getAll();
         if (!count($products)) {
@@ -21,6 +21,6 @@ class ProductController extends Controller
             'header' => 'Products catalog',
             'products' => $products
         ];
-        echo $this->render($params);
+        return $this->render($params);
     }
 }

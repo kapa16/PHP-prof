@@ -4,10 +4,16 @@ namespace App\Controllers;
 
 class IndexController extends Controller
 {
-    protected const TEMPLATE_NAME = 'gallery.twig';
+    protected $template = 'gallery.twig';
 
-    public function index(): void
+    public function index(): string
     {
-        echo $this->render(['header' => 'Gallery']);
+        return $this->render(['header' => 'Gallery']);
+    }
+
+    public function error($data)
+    {
+        $this->template = 'error.twig';
+        return $this->render($data);
     }
 }

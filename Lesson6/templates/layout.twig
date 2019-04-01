@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css">
-    <title>{{title}}</title>
+    <title>{% block title %}Geek Brains{% endblock %}</title>
 </head>
 <body>
 
@@ -42,7 +42,8 @@
 {{ include('footer.twig') }}
 
 
-{#<script src="js/Gallery.js"></script>#}
-{#<script src="js/main.js"></script>#}
+<script src="js/jquery-3.3.1.js"></script>
+<script src="js/Cart.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>

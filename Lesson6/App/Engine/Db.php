@@ -3,6 +3,9 @@
 namespace App\Engine;
 
 use App\Traits\SingletonTrait;
+use PDO;
+use PDOStatement;
+use RuntimeException;
 
 /**
  * Class Db
@@ -12,7 +15,7 @@ use App\Traits\SingletonTrait;
 class Db
 {
     private $link;
-    /** @var \PDOStatement */
+    /** @var PDOStatement */
     private $sth;
 
     use SingletonTrait;
@@ -20,13 +23,23 @@ class Db
     private function __construct()
     {
         $dsn = DB_DRIVER . ':dbname=' . DB_NAME . ';host=' . DB_HOST;
-        $this->link = new \PDO($dsn, DB_USER, DB_PASSWORD, [\PDO::FETCH_ASSOC]);
+        $this->link = new PDO($dsn, DB_USER, DB_PASSWORD, [PDO::FETCH_ASSOC]);
     }
 
     public function exec(string $sql, array $params): bool
     {
         $this->sth = $this->link->prepare($sql);
-        return $this->sth->execute($params);
+        $this->sth->execute($params);
+        return $this->queryExecute($params);
+    }
+
+    private function queryExecute($params): bool
+    {
+        $this->sth->execute($params);
+        if ($this->sth->errorCode() !== '00000') {
+            throw new RuntimeException($this->sth->errorInfo()[2]);
+        }
+        return true;
     }
 
     /**
@@ -39,8 +52,15 @@ class Db
     public function queryClass(string $sql, array $params, string $class): bool
     {
         $this->sth = $this->link->prepare($sql);
-        $this->sth->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $class);
-        return $this->sth->execute($params);
+        $this->sth->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $class);
+        return $this->queryExecute($params);
+    }
+
+    public function queryArray(string $sql, array $params): bool
+    {
+        $this->sth = $this->link->prepare($sql);
+        $this->sth->setFetchMode(PDO::FETCH_ASSOC);
+        return $this->queryExecute($params);
     }
 
     /**
@@ -53,6 +73,12 @@ class Db
     public function queryAll(string $sql, array $params, string $class): array
     {
         $this->queryClass($sql, $params, $class);
+        return $this->sth->fetchAll();
+    }
+
+    public function queryAllArray(string $sql, array $params): array
+    {
+        $this->queryArray($sql, $params);
         return $this->sth->fetchAll();
     }
 

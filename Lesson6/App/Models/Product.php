@@ -4,8 +4,6 @@ namespace App\Models;
 
 class Product extends Model
 {
-    public const TABLE = 'products';
-
     public $name;
     public $description;
     public $price;

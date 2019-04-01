@@ -5,7 +5,7 @@
 <div class="products__catalog row justify-content-between">
     {% for product in products %}
     <div class="card col-xs-12 col-md-6 col-lg-4 col-xl-3 py-3">
-        <a href="/api/cart/add?product-id={{product.id}}">
+        <a href="/product?product-id={{product.id}}">
             <img
                     src="{{product.image}}"
                     alt="{{product.name}}"

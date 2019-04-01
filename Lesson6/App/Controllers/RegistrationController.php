@@ -12,11 +12,11 @@ use App\Models\User;
 
 class RegistrationController extends Controller
 {
-    protected const TEMPLATE_NAME = 'registration.twig';
+    protected $template = 'registration.twig';
 
-    public function index(): void
+    public function index(): string
     {
-        echo $this->render();
+        return $this->render();
     }
 
     public function send(): void

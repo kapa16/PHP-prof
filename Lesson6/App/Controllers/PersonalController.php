@@ -11,19 +11,23 @@ namespace App\Controllers;
 
 class PersonalController extends Controller
 {
-    protected const TEMPLATE_NAME = 'personal_area.twig';
+    protected $template = 'personal_area.twig';
 
-    public function index(): void
+    public function index(): string
     {
         $authenticatedUser = $_SESSION['user'] ?? '';
         if (!$authenticatedUser) {
             header('Location: /login');
         }
+
+        $ordersController = new OrderController();
+        $orders = $ordersController->get($authenticatedUser->id);
+
         $params = [
             'header' => 'Personal area',
             'user' => $authenticatedUser,
-            'pages' => $_SESSION['visited_pages']
+            'orders' => $orders
         ];
-        echo $this->render($params);
+        return $this->render($params);
     }
 }

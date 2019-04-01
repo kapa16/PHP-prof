@@ -4,16 +4,17 @@ namespace App\Controllers\Api;
 
 abstract class ApiController
 {
-    protected $data;
+    public $data = [];
     protected $errorMessage;
+    protected $resultData;
 
-    protected function success(): string
+    protected function success(): array
     {
-        return '{"result": 1, "data":' . json_encode($this->data) . ', "message": ""}';
+        return ['result' => 1];
     }
 
-    protected function error(): string
+    protected function error(): array
     {
-        return '{"result": 0}, "data": "", "message": ' . $this->errorMessage . '}';
+        return ['result' => 0];
     }
 }

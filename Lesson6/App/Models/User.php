@@ -13,6 +13,7 @@ class User extends Model
     public $name;
     public $lastname;
     public $email;
+    public $role;
 
     protected static function getTableName(): string
     {
@@ -56,5 +57,10 @@ class User extends Model
     {
         $this->excludeQueryParams[] = 'passwordCheck';
         return parent::insert();
+    }
+
+    public static function getAuthorized()
+    {
+        return $_SESSION['user'] ?? '';
     }
 }

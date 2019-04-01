@@ -6,9 +6,9 @@ use App\Models\User;
 
 class UserController extends Controller
 {
-    protected const TEMPLATE_NAME = 'login.twig';
+    protected $template = 'login.twig';
 
-    public function login(): void
+    public function login(): string
     {
         $params = [];
         $error = $this->data['error'] ?? '';
@@ -21,7 +21,7 @@ class UserController extends Controller
             $params['error'] = $errors[$error];
         }
 
-        echo $this->render($params);
+        return $this->render($params);
     }
 
     private function loginError($error): void

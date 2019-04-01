@@ -18,16 +18,9 @@
     </div>
     <div class="row justify-content-center">
         <h4 class="col-12 p-2">
-            Visited pages:
+            Orders:
         </h4>
     </div>
-    {% for page in pages %}
-
-    <div class="row justify-content-center">
-        <div class="col-12 p-2">
-            {{page}}
-        </div>
-    </div>
-    {% endfor %}
+    {% include "order.twig" %}
 
 {% endblock %}

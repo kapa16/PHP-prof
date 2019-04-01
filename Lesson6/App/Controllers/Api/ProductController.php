@@ -3,7 +3,7 @@
 namespace App\Controllers\Api;
 
 
-class Product extends ApiController
+class ProductController extends ApiController
 {
     protected function actionGetProducts(): void
     {
