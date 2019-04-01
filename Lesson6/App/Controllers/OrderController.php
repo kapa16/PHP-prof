@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderProduct;
+use App\Models\Product;
 
 class OrderController extends Controller
 {
@@ -31,7 +32,14 @@ class OrderController extends Controller
                 'value' => $order['id'],
             ];
             $order['products'] = OrderProduct::getAllArray(null, $filter);
-            var_dump($filter);
+
+            foreach ($order['products'] as &$orderProduct) {
+                $product = Product::getOne('id', $orderProduct['product_id']);
+                $orderProduct['name'] = $product->name;
+                $orderProduct['price'] = $product->price;
+                $orderProduct['sum'] = $orderProduct['price'] * $orderProduct['quantity'] ;
+            }
+            unset($orderProduct);
         }
         unset($order);
         return $orders;

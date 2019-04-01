@@ -7,6 +7,7 @@ abstract class ApiController
     public $data = [];
     protected $errorMessage;
     protected $resultData;
+    public $locationRedirect;
 
     protected function success(): array
     {

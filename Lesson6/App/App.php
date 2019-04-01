@@ -49,6 +49,7 @@ class App
                     'data'       => $result,
                     'error'      => false,
                     'error_text' => '',
+                    'location'   => $controller->locationRedirect
                 ];
                 header('Content-Type: application/json');
                 echo json_encode($result);
@@ -61,6 +62,7 @@ class App
                     'data'       => null,
                     'error'      => true,
                     'error_text' => $e->getMessage(),
+                    'location'   => $controller->locationRedirect
                 ];
                 header('Content-Type: application/json');
                 echo json_encode($result);

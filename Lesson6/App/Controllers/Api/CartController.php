@@ -100,7 +100,8 @@ class CartController extends ApiController
         }
         $user = User::getAuthorized();
         if (!$user) {
-            throw new RuntimeException('You need login to make order'); //, '/login.php'
+            $this->locationRedirect = '/user/login';
+            throw new RuntimeException('You need login to make order');
         }
 
         $orderProducts = $this->get();
@@ -110,6 +111,6 @@ class CartController extends ApiController
             $this->clear();
         }
 
-//        success('/personal_area.php');
+        $this->locationRedirect = '/personal';
     }
 }

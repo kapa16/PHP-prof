@@ -30,6 +30,7 @@ class User extends Model
 
     public static function registration(array $userData = []): User
     {
+        $userData['role'] = 0;
         $user = new self($userData);
         if ($user->insert()) {
             $user->createSession();
