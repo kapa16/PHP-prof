@@ -37,7 +37,7 @@ class OrderController extends Controller
                 $product = Product::getOne('id', $orderProduct['product_id']);
                 $orderProduct['name'] = $product->name;
                 $orderProduct['price'] = $product->price;
-                $orderProduct['sum'] = $orderProduct['price'] * $orderProduct['quantity'] ;
+                $orderProduct['sum'] = $orderProduct['price'] * $orderProduct['quantity'];
             }
             unset($orderProduct);
         }

@@ -9,6 +9,64 @@ window.onload = () => {
     evt.preventDefault();
     cart.addProduct(evt.target);
   });
+
+  //--------------order control-------------
+  $('.order__status_change').on('click', (evt) => {
+    evt.preventDefault();
+    const orderId = $(evt.target).data('id');
+    let orderStatusFull = $(evt.target).parent().find('option:selected').val();
+    const orderStatus = parseInt($(evt.target).parent().find('option:selected').val());
+    orderStatusFull = orderStatusFull.replace( /\d+\.\s/g, "" ).toLowerCase();
+    $.post({
+      url: '/api/order.php',
+      data: {
+        apiMethod: 'changeOrderStatus',
+        postData: {
+          id: orderId,
+          status: orderStatus
+        }
+      },
+      success: () => {
+        $(evt.target).closest('.order_wrapper').find('.order_status').text(orderStatusFull);
+      }
+    })
+  });
+
+  $('.order__product_remove').on('click', (evt) => {
+    const $target = $(evt.target);
+    const orderProductId = $target.data('id');
+    $.post({
+      url: `/api/order/removeProduct?id=${orderProductId}`,
+      data: {
+        apiMethod: 'deleteProductFromOrder',
+        postData: {
+          id: orderProductId
+        }
+      },
+      success: () => {
+        $target.closest('.table_row').addClass('table_row_deleted');
+        $target.text('Вернуть');
+      }
+    })
+  });
+
+  $('.order__product_retrieve').on('click', (evt) => {
+    const $target = $(evt.target);
+    const orderProductId = $target.data('id');
+    $.post({
+      url: '/api/order/retrieveProduct?id=${orderProductId}',
+      data: {
+        apiMethod: 'retrieveProductFromOrder',
+        postData: {
+          id: orderProductId
+        }
+      },
+      success: () => {
+        $target.closest('.table_row').removeClass('table_row_deleted');
+        $target.text('Удалить');
+      }
+    })
+  });
 };
 
 
