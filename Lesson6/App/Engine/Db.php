@@ -29,7 +29,6 @@ class Db
     public function exec(string $sql, array $params): bool
     {
         $this->sth = $this->link->prepare($sql);
-        $this->sth->execute($params);
         return $this->queryExecute($params);
     }
 
