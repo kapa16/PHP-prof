@@ -11,7 +11,9 @@ use RuntimeException;
  */
 abstract class Model
 {
+    /** @var array|string $selectFields - Select fields for query ['id' => 'index'] */
     public static $selectFields = [];
+    /** @var array $filters - Filter for query ['col'   => 'id', 'oper'  => '=', 'value' => 1] */
     public static $filters = [];
     public static $filterLogicalOperator = 'AND';
     public static $limitFrom = 0;
@@ -194,25 +196,6 @@ abstract class Model
     {
         $sql = static::generateSelectQuery();
         return static::getDb()->queryAllArray($sql, []);
-    }
-
-    /**
-     * Получает лимитированное количестов записей из базы данных
-     * @param array|null $sortFields
-     * @param $limitFrom
-     * @param $limitCount
-     * @return array
-     */
-    public static function getLimit(
-        ?array $sortFields = [],
-        $limitFrom = null,
-        $limitCount = null): array
-    {
-        $sql = static::generateSelectQuery([], [], null, $sortFields, $limitFrom, $limitCount);
-        // TODO Почему не работает подстановка
-//        $params = [':from' => $limitFrom, ':count' => $limitCount];
-        $params = [];
-        return static::getDb()->queryAll($sql, $params, static::class);
     }
 
     /**
