@@ -3,6 +3,7 @@
 -- Host: localhost    Database: geek_brains_shop
 -- ------------------------------------------------------
 -- Server version	8.0.15
+DROP DATABASE IF EXISTS `geek_brains_shop`;
 CREATE DATABASE IF NOT EXISTS `geek_brains_shop`;
 USE `geek_brains_shop`;
 
@@ -220,7 +221,9 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Ivan','2019-03-12 15:45:48','2019-03-12 15:45:48','io_but','Petrov','nnn@mmm.ei',''),(2,'q','2019-03-28 13:28:29',NULL,'q','q','q@q.j','q'),(4,'w','2019-03-28 13:37:49',NULL,'w','w','w@w.e','$2y$10$HobTMkYF6.fCF6hLk3IFyeJVuMmUNs/SmyB2zz4/CcQ0/uIy/a67e');
+INSERT INTO `users` VALUES (1,0,'Ivan','2019-03-12 15:45:48','2019-03-12 15:45:48','io_but','Petrov','nnn@mmm.ei',''),
+                           (2,1,'q','2019-03-28 13:28:29',NULL,'q','q','q@q.j','q'),
+                           (4,1,'w','2019-03-28 13:37:49',NULL,'w','w','w@w.e','$2y$10$HobTMkYF6.fCF6hLk3IFyeJVuMmUNs/SmyB2zz4/CcQ0/uIy/a67e');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

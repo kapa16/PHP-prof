@@ -9,7 +9,7 @@ use App\Models\OrderProduct;
 class OrderController extends ApiController
 {
 
-    public function removeProduct()
+    public function removeProduct(): void
     {
         $id = $_POST['postData']['id'] ?? '';
         $orderProduct = OrderProduct::getOne('id', $id);
@@ -17,7 +17,7 @@ class OrderController extends ApiController
         $orderProduct->save();
     }
 
-    public function retrieveProduct()
+    public function retrieveProduct(): void
     {
         $id = $_POST['postData']['id'] ?? '';
         $orderProduct = OrderProduct::getOne('id', $id);

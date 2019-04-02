@@ -12,19 +12,39 @@ use RuntimeException;
 abstract class Model
 {
     /** @var array|string $selectFields - Select fields for query ['id' => 'index'] */
-    public static $selectFields = [];
+    protected static $selectFields = [];
     /** @var array $filters - Filter for query ['col'   => 'id', 'oper'  => '=', 'value' => 1] */
-    public static $filters = [];
-    public static $filterLogicalOperator = 'AND';
-    public static $limitFrom = 0;
-    public static $limitCount = 0;
-    public static $sortFields = [];
-    public static $reversSort = false;
+    protected static $filters = [];
+    /** @var string $filterLogicalOperator - logical operator between filters */
+    protected static $filterLogicalOperator = 'AND';
+    /** @var int $limitFrom - LIMIT from */
+    protected static $limitFrom = 0;
+    /** @var int $limitCount - LIMIT count */
+    protected static $limitCount = 0;
+    /** @var array $sortFields - fields for sort query ['col' => 'id', 'direction' => 'asc'] */
+    protected static $sortFields = [];
 
     public $id;
     protected $excludeQueryParams;
 
     abstract protected static function getTableName();
+
+    public static function setQueryParams(
+        array $selectFields = [],
+        array $filters = [],
+        string $filterLogicalOperator = 'AND',
+        array $sortFields = [],
+        int $limitFrom = 0,
+        int $limitCount = 0
+    ): void
+    {
+        static::$selectFields = $selectFields;
+        static::$filters = $filters;
+        static::$filterLogicalOperator = $filterLogicalOperator;
+        static::$limitFrom = $limitFrom;
+        static::$limitCount = $limitCount;
+        static::$sortFields = $sortFields;
+    }
 
     protected static function getDb()
     {
@@ -148,11 +168,16 @@ abstract class Model
     protected static function getOrderString(): string
     {
         $sortFields = static::$sortFields;
+
         if (empty($sortFields)) {
             return '';
         }
-        $strSortFields = implode(', ', $sortFields);
-        return " ORDER BY {$strSortFields}";
+        $queries = [];
+        foreach ($sortFields as $order) {
+            $direction = strtolower($order['direction']) === 'asc' ? 'asc' : 'desc';
+            $queries[] = "{$order['col']} $direction";
+        }
+        return ' ORDER BY ' . implode(', ', $queries);
     }
 
     protected static function getLimitString(): string
@@ -206,8 +231,9 @@ abstract class Model
      */
     public static function getOne($fieldName, $fieldValue)
     {
-        $sql = 'SELECT * FROM `' . static::getTableName() . "` WHERE `$fieldName`=:$fieldName;";
-        return static::getDb()->queryOne($sql, [":$fieldName" => $fieldValue], static::class);
+        static::$filters[] = ['col' => $fieldName, 'oper' => '=', 'value' => $fieldValue];
+        $sql = static::generateSelectQuery();
+        return static::getDb()->queryOne($sql, [], static::class);
     }
 
     public static function getCountRows()

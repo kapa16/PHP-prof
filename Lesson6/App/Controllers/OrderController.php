@@ -20,9 +20,8 @@ class OrderController extends Controller
                 'value' => $userId,
             ];
         }
-        $sortFields = [' create_data DESC'];
-        Order::$filters = $filter;
-        Order::$sortFields = $sortFields;
+        $sortFields[] = ['col' => ' create_data', 'direction' => 'DESC'];
+        OrderProduct::setQueryParams([], $filter, 'AND', $sortFields);
         $orders = Order::getAllArray();
 
 
@@ -33,10 +32,11 @@ class OrderController extends Controller
                 'oper'  => '=',
                 'value' => $order['id'],
             ];
-            OrderProduct::$filters = $filter;
+            OrderProduct::setQueryParams([], $filter);
             $order['products'] = OrderProduct::getAllArray();
 
             foreach ($order['products'] as &$orderProduct) {
+                Product::setQueryParams();
                 $product = Product::getOne('id', $orderProduct['product_id']);
                 $orderProduct['name'] = $product->name;
                 $orderProduct['price'] = $product->price;
