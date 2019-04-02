@@ -21,7 +21,9 @@ class OrderController extends Controller
             ];
         }
         $sortFields = [' create_data DESC'];
-        $orders = Order::getAllArray(null, $filter, ' AND ', $sortFields);
+        Order::$filters = $filter;
+        Order::$sortFields = $sortFields;
+        $orders = Order::getAllArray();
 
 
         foreach ($orders as &$order) {
@@ -31,7 +33,8 @@ class OrderController extends Controller
                 'oper'  => '=',
                 'value' => $order['id'],
             ];
-            $order['products'] = OrderProduct::getAllArray(null, $filter);
+            OrderProduct::$filters = $filter;
+            $order['products'] = OrderProduct::getAllArray();
 
             foreach ($order['products'] as &$orderProduct) {
                 $product = Product::getOne('id', $orderProduct['product_id']);

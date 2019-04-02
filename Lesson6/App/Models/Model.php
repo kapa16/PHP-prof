@@ -11,6 +11,11 @@ use RuntimeException;
  */
 abstract class Model
 {
+    public static $selectFields = [];
+    public static $filters = [];
+    public static $filterLogicalOperator = 'AND';
+    public static $limitFrom = 0;
+    public static $limitCount = 0;
     public static $sortFields = [];
     public static $reversSort = false;
 
@@ -18,6 +23,12 @@ abstract class Model
     protected $excludeQueryParams;
 
     abstract protected static function getTableName();
+
+    protected static function getDb()
+    {
+        /** @var Db Db */
+        return Db::getInstance();
+    }
 
     public function __construct($modelData = [])
     {
@@ -75,16 +86,9 @@ abstract class Model
         return $data;
     }
 
-    protected static function generateSelectQuery(
-        ?array $select = [],
-        ?array $filters = [],
-        string $filterLogicalOperator = 'AND',
-        ?array $sortFields = [],
-        int $limitFrom = null,
-        int $limitCount = null): string
+    protected static function getSelectFieldsString(): string
     {
-        $sql = 'SELECT ';
-
+        $select = static::$selectFields;
         if (empty($select)) {
             $select = ['*'];
         }
@@ -99,89 +103,97 @@ abstract class Model
                 $queries[] = "$key as '$value'";
             }
         }
-        $sql .= implode(', ', $queries);
+        return implode(', ', $queries);
+    }
+
+    protected static function getFilterString(): string
+    {
+        $filters = static::$filters;
+        $filterLogicalOperator = static::$filterLogicalOperator;
+
+        if (empty($filters)) {
+            return '';
+        }
+        $queries = [];
+        //Проходимся по всем фильтрам
+        foreach ($filters as $filter) {
+            //Перебираем оператор
+            switch ($filter['oper']) {
+                case 'IS NULL':
+                case 'IS NOT NULL':
+                    //Для работы с NULL $value не нужно
+                    $queries[] = "{$filter['col']} {$filter['oper']}";
+                    break;
+                case 'IN':
+                case 'NOT IN':
+                    //Для работы с IN $value должно иметь вид (1,2,3)
+                    $value = $filter['value'];
+                    if (is_array($value)) {
+                        $value = '(' . implode(', ', $value) . ')';
+                    }
+                    $queries[] = "{$filter['col']} {$filter['oper']} {$value}";
+                    break;
+                default:
+                    //В остальных случаях без обработки
+                    $queries[] = "{$filter['col']} {$filter['oper']} '{$filter['value']}'";
+                    break;
+            };
+        }
+        //Добавляем выборку в запрос
+        return ' WHERE ' . implode(' ' . $filterLogicalOperator . ' ', $queries);
+    }
+
+    protected static function getOrderString(): string
+    {
+        $sortFields = static::$sortFields;
+        if (empty($sortFields)) {
+            return '';
+        }
+        $strSortFields = implode(', ', $sortFields);
+        return " ORDER BY {$strSortFields}";
+    }
+
+    protected static function getLimitString(): string
+    {
+        $limitFrom = static::$limitFrom;
+        $limitCount = static::$limitCount;
+        if ($limitFrom || $limitCount) {
+            return " LIMIT {$limitFrom}, {$limitCount}";
+        }
+        return '';
+    }
+
+    protected static function generateSelectQuery(): string
+    {
+        $sql = 'SELECT ';
+
+        $sql .= static::getSelectFieldsString();
 
         $sql .= ' FROM `' . static::getTableName() . '`';
 
-        //Выборка (WHERE)
-        if (!empty($filters)) {
-            $queries = [];
-            //Проходимся по всем фильтрам
-            foreach ($filters as $filter) {
-                //Перебираем оператор
-                switch ($filter['oper']) {
-                    case 'IS NULL':
-                    case 'IS NOT NULL':
-                        //Для работы с NULL $value не нужно
-                        $queries[] = "{$filter['col']} {$filter['oper']}";
-                        break;
-                    case 'IN':
-                    case 'NOT IN':
-                        //Для работы с IN $value должно иметь вид (1,2,3)
-                        $value = $filter['value'];
-                        if (is_array($value)) {
-                            $value = '(' . implode(', ', $value) . ')';
-                        }
-                        $queries[] = "{$filter['col']} {$filter['oper']} {$value}";
-                        break;
-                    default:
-                        //В остальных случаях без обработки
-                        $queries[] = "{$filter['col']} {$filter['oper']} '{$filter['value']}'";
-                        break;
-                };
-            }
-            //Добавляем выборку в запрос
-            $sql .= ' WHERE ' . implode(' ' . $filterLogicalOperator . ' ', $queries);
-        }
+        $sql .= static::getFilterString();
 
+        $sql .= static::getOrderString();
 
-        if (count($sortFields) > 0) {
-            $strSortFields = implode(', ', $sortFields);
-            $sql .= " ORDER BY {$strSortFields}";
-        }
-
-//        if ($limitCount) {
-//            $sql .= ' LIMIT :limitFrom, :limitCount';
-//        }
-        if ($limitFrom || $limitCount) {
-            // TODO Почему не работает подстановка
-            $sql .= " LIMIT {$limitFrom}, {$limitCount}";
-//            $sql .= ' LIMIT :from, :count;';
-        }
+        $sql .= static::getLimitString();
 
         return $sql;
     }
 
     /**
      * Получает все записи из базы данных
-     * @param array|null $select
-     * @param array|null $filters
-     * @param string $filterLogicalOperator
-     * @param array|null $sortFields
      * @return array
      */
-    public static function getAll(
-        ?array $select = [],
-        ?array $filters = [],
-        string $filterLogicalOperator = ' AND ',
-        ?array $sortFields = []
-    ): array
+    public static function getAll(): array
     {
-        $db = Db::getInstance();
-        $sql = static::generateSelectQuery($select, $filters, $filterLogicalOperator, $sortFields);
-        return $db->queryAll($sql, [], static::class);
+        $sql = static::generateSelectQuery();
+        return static::getDb()->queryAll($sql, [], static::class);
     }
 
-    public static function getAllArray(
-        ?array $select = [],
-        ?array $filters = [],
-        string $filterLogicalOperator = ' AND ',
-        ?array $sortFields = []
-    ): array
+    public static function getAllArray(): array
     {
-        $db = Db::getInstance();
-        $sql = static::generateSelectQuery($select, $filters, $filterLogicalOperator, $sortFields);
-        return $db->queryAllArray($sql, []);
+        $sql = static::generateSelectQuery();
+        return static::getDb()->queryAllArray($sql, []);
     }
 
     /**
@@ -196,35 +208,29 @@ abstract class Model
         $limitFrom = null,
         $limitCount = null): array
     {
-        /** @var Db $db */
-        $db = Db::getInstance();
         $sql = static::generateSelectQuery([], [], null, $sortFields, $limitFrom, $limitCount);
         // TODO Почему не работает подстановка
 //        $params = [':from' => $limitFrom, ':count' => $limitCount];
         $params = [];
-        return $db->queryAll($sql, $params, static::class);
+        return static::getDb()->queryAll($sql, $params, static::class);
     }
 
     /**
      * Retrieves a record from a database by unique field
-     * @param $fieldName
+     * @param $fieldName - field with unique index
      * @param $fieldValue
      * @return mixed
      */
     public static function getOne($fieldName, $fieldValue)
     {
-        /** @var Db $db */
-        $db = Db::getInstance();
         $sql = 'SELECT * FROM `' . static::getTableName() . "` WHERE `$fieldName`=:$fieldName;";
-        return $db->queryOne($sql, [":$fieldName" => $fieldValue], static::class);
+        return static::getDb()->queryOne($sql, [":$fieldName" => $fieldValue], static::class);
     }
 
     public static function getCountRows()
     {
-        /** @var Db $db */
-        $db = Db::getInstance();
         $sql = 'SELECT COUNT(*) count FROM `' . static::getTableName() . '`';
-        return $db->queryOneAssoc($sql, [])['count'];
+        return static::getDb()->queryOneAssoc($sql, [])['count'];
     }
 
     public function save(): bool
@@ -246,18 +252,16 @@ abstract class Model
         $this->excludeQueryParams[] = 'change_data';
         $data = $this->getQueryParams();
 
-        /** @var Db $db */
-        $db = Db::getInstance();
         $sql = 'INSERT INTO `' . static::getTableName() . '` 
         (' . implode(', ', $data['fields']) . ') VALUES
         (' . implode(', ', array_keys($data['params'])) . ');';
 
-        $result = $db->exec($sql, $data['params']);
+        $result = static::getDb()->exec($sql, $data['params']);
 
         if (!$result) {
             throw new RuntimeException('Error insert to DB');
         }
-        $this->id = $db->getInsertedId();
+        $this->id = static::getDb()->getInsertedId();
 
         return $result;
     }
@@ -269,10 +273,8 @@ abstract class Model
     {
         $this->validateId();
 
-        /** @var Db $db */
-        $db = Db::getInstance();
         $sql = 'DELETE FROM `' . static::getTableName() . '` WHERE `id`=:id;';
-        return $db->exec($sql, [':id' => $this->id]);
+        return static::getDb()->exec($sql, [':id' => $this->id]);
     }
 
     /**
@@ -284,8 +286,7 @@ abstract class Model
 
         $data = $this->getQueryParams();
 
-        $db = Db::getInstance();
         $sql = 'UPDATE `' . static::getTableName() . '` SET ' . implode(', ', $data['set']) . ' WHERE `id`=:id;';
-        return $db->exec($sql, $data['params']);
+        return static::getDb()->exec($sql, $data['params']);
     }
 }

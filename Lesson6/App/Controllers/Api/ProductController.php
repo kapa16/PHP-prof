@@ -3,18 +3,20 @@
 namespace App\Controllers\Api;
 
 
+use App\Models\Product;
+
 class ProductController extends ApiController
 {
     protected function actionGetProducts(): void
     {
-        $limitFrom = +$_GET['from'] ?? 0;
-        $limitTo = +$_GET['to'] ?? 0;
-        $this->data = \App\Models\Product::getLimit($limitFrom, $limitTo);
+        Product::$limitFrom = +$_GET['from'] ?? 0;
+        Product::$limitCount = +$_GET['to'] ?? 0;
+        $this->data = Product::getLimit();
     }
 
     protected function actionGetCountProducts(): void
     {
-        $this->data = \App\Models\Product::getCountRows();
+        $this->data = Product::getCountRows();
     }
 
     public function __invoke()

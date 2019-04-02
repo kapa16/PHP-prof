@@ -3,13 +3,10 @@
 namespace App;
 
 use App\Controllers\IndexController;
-use App\Traits\SingletonTrait;
 use RuntimeException;
 
 class App
 {
-    use SingletonTrait;
-
     public function __invoke()
     {
         try {

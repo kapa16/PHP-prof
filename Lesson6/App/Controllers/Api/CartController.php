@@ -48,7 +48,10 @@ class CartController extends ApiController
             'price',
         ];
 
-        $products = Product::getAllArray($select, $filter, 'OR');
+        Product::$selectFields = $select;
+        Product::$filters = $filter;
+        Product::$filterLogicalOperator = 'OR';
+        $products = Product::getAllArray();
         foreach ($products as &$product) {
             $product['quantity'] = $this->cart[$product['id']];
         }

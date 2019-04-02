@@ -10,6 +10,8 @@ class ProductController extends Controller
 
     public function index(): string
     {
+        Product::$limitFrom = +$_GET['from'] ?? 0;
+        Product::$limitCount = +$_GET['to'] ?? 0;
         $products = Product::getAll();
         if (!count($products)) {
             Product::fillTestProduct();
