@@ -54,12 +54,12 @@ class Cart {
     });
     let $buttonOrder = $('<button/>', {
       class: 'btn btn-primary',
-      text: 'Оформить заказ'
+      text: 'Create order'
     });
     $buttonOrder.on('click', () => this._sendToServer({}, 'order'));
     const $cartHeader = $('<div/>', {
       class: 'cart-header'
-    }).text(`Корзина (${this.countGoods})`);
+    }).text(`Cart (${this.countGoods})`);
     $(this.container).append($cartHeader);
     $cartItemsDiv.appendTo($cartListDiv);
     $totalGoods.appendTo($cartListDiv);
@@ -99,9 +99,9 @@ class Cart {
   }
 
   _renderSum() {
-    $('.cart-header').text(`Корзина (${this.countGoods})`);
-    $('.sum-goods').text(`Всего товаров в корзине: ${this.countGoods}`);
-    $('.sum-price').text(`Общая сумма: ${this.amount} руб.`);
+    $('.cart-header').text(`Cart (${this.countGoods})`);
+    $('.sum-goods').text(`Total count: ${this.countGoods}`);
+    $('.sum-price').text(`Total sum: $${this.amount} `);
   }
 
   _updateCart(product) {

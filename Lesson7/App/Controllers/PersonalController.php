@@ -1,13 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: kapa
- * Date: 28.03.2019
- * Time: 0:19
- */
 
 namespace App\Controllers;
 
+use App\Models\OrderStatus;
 
 class PersonalController extends Controller
 {
@@ -23,10 +18,14 @@ class PersonalController extends Controller
         $ordersController = new OrderController();
         $orders = $ordersController->get($authenticatedUser->id);
 
+        OrderStatus::setQueryParams();
+        $statuses = OrderStatus::getAllArray();
+
         $params = [
             'header' => 'Personal area',
             'user' => $authenticatedUser,
-            'orders' => $orders
+            'orders' => $orders,
+            'statuses' => $statuses
         ];
         return $this->render($params);
     }

@@ -1,13 +1,20 @@
 
 {% for order in orders %}
 <div class="order_wrapper">
-    <h3>Заказ №{{order.id}}, статус: <span class="order_status">{{order.status}}</span></h3>
-    {{ADMINORDERCONTROL}}
+    <h3>Order №{{order.id}}, status: <span class="order_status">{{order.status_id}}</span></h3>
+    <form action="" method="post">
+        <select name="status">
+            {% for status in statuses %}
+            <option {% if status.id == order.status_id %} selected {% endif %}>{{status.id}}. {{status.status}}</option>
+            {% endfor %}
+        </select>
+        <button class="btn btn-primary order__status_change" type="submit" data-id="{{ORDERID}}">Change order status</button>
+    </form>
     <div class="row table_row">
-        <div class="col-8 table_column">Товар</div>
-        <div class="col-1 table_column">Количество</div>
-        <div class="col-1 table_column">Цена</div>
-        <div class="col-1 table_column">Сумма</div>
+        <div class="col-8 table_column">Product</div>
+        <div class="col-1 table_column">Quantity</div>
+        <div class="col-1 table_column">Price</div>
+        <div class="col-1 table_column">Total</div>
         <div class="col-1 table_column"></div>
     </div>
 
@@ -20,7 +27,7 @@
             <div class="col-1 table_column">
                 <button class="btn btn-primary order__product_{% if product.deleted %}retrieve{% else %}remove{% endif %}"
                         data-id="{{product.id}}">
-                    {% if product.deleted %}Вернуть{% else %}Удалить{% endif %}
+                    {% if product.deleted %}Retrieve{% else %}Remove{% endif %}
                 </button>
             </div>
         </div>
