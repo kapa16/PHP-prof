@@ -1,29 +1,61 @@
 {% extends "layout.twig" %}
 
 {% block main %}
-{{PRODUCTADD}}
-<div class="products__catalog row justify-content-between">
-    {% for product in products %}
-    <div class="card col-xs-12 col-md-6 col-lg-4 col-xl-3 py-3">
-        <a href="/product?product-id={{product.id}}">
-            <img
-                    src="{{product.image}}"
-                    alt="{{product.name}}"
-                    class="product__image card-img-top"
-                    title="Просмотр товара"
-            >
-            <div class="card-body">
-                <h5 class="card-title">{{product.name}}</h5>
-                <p class="card-text">Цена: {{product.price}}</p>
-                <button class="btn btn-primary btn-buy" data-id="{{product.id}}" data-name="{{product.name}}"
-                        data-price="{{product.price}}">
+    {% if catalog == true %}
+        {% if admin == false %}
+            <a href="/admin/createProduct.php" class="product__control_btn">Добавить товар</a>
+        {% endif %}
+        <div class="products__catalog row justify-content-between">
+            {% for product in products %}
+                <div class="card col-xs-12 col-md-6 col-lg-4 col-xl-3 py-3">
+                    <a href="/product/card?product-id={{ product.id }}">
+                        <img
+                                src="{{ product.image }}"
+                                alt="{{ product.name }}"
+                                class="product__image card-img-top"
+                                title="Просмотр товара"
+                        >
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text">Цена: {{ product.price }}</p>
+                            <button class="btn btn-primary btn-buy" data-id="{{ product.id }}"
+                                    data-name="{{ product.name }}"
+                                    data-price="{{ product.price }}">
+                                Купить
+                            </button>
+                        </div>
+                    </a>
+
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="product__view_wrap">
+            {% if admin == false %}
+                <div class="product__control">
+                    <a href="/admin/updateProduct.php?product-id={{ PRODUCTID }}" class="product__control_btn">Редактировать
+                        товар</a>
+                    <a href="/admin/deleteProduct.php?product-id={{ PRODUCTID }}" class="product__control_btn">Удалить
+                        товар</a>
+                </div>
+            {% endif %}
+
+            <div class="product__view">
+                <h3>{{ product.name }}</h3>
+                <img
+                        src="{{ product.image }}"
+                        alt="{{ product.name }}"
+                        class="product__image"
+                        title="Просмотр товара"
+                >
+                <p>Цена: {{ product.price }}</p>
+                <button class="btn btn-primary btn-buy" data-id="{{ product.id }}"
+                        data-name="{{ product.name }}"
+                        data-price="{{ product.price }}">
                     Купить
                 </button>
+                <p>Описание: {{ product.description }}</p>
             </div>
-        </a>
-
-    </div>
-    {% endfor %}
-
-</div>
+        </div>
+    {% endif %}
 {% endblock %}

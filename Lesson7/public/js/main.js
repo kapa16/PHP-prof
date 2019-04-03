@@ -2,13 +2,16 @@ window.onload = () => {
 
   const cart = new Cart('/api/cart/');
 
-  $('.products__catalog').on('click', (evt) => {
+  const buyHandler = (evt) => {
     if (!evt.target.classList.contains('btn-buy')) {
       return;
     }
     evt.preventDefault();
     cart.addProduct(evt.target);
-  });
+  };
+
+  $('.products__catalog').on('click', (evt) => buyHandler(evt));
+  $('.product__view_wrap').on('click', (evt) => buyHandler(evt));
 
   //--------------order control-------------
   $('.order__status_change').on('click', (evt) => {
