@@ -11,11 +11,15 @@ class ProductController extends Controller
 
     public function index(): string
     {
-        $limitFrom = +$_GET['from'] ?? 0;
-        $limitCount = +$_GET['to'] ?? 0;
-        Product::setQueryParams([], [], 'AND', [], $limitFrom, $limitCount);
+        $limitFrom = $_GET['from'] ?? 0;
+        $limitCount = $_GET['to'] ?? 0;
 
-        $products = Product::getAll();
+        $queryParams = [
+            'limitFrom' => $limitFrom,
+            'limitCount' => $limitCount,
+        ];
+
+        $products = Product::getAll($queryParams);
         if (!count($products)) {
             Product::fillTestProduct();
             header('Location: /product');
@@ -37,7 +41,15 @@ class ProductController extends Controller
             throw new RuntimeException('No product id');
         }
         $productId = (int) $_GET['product-id'];
-        $product = Product::getOne('id', $productId);
+        $filters[] = [
+            'col'   => 'id',
+            'oper'  => '=',
+            'value' => $productId,
+        ];
+        $queryParams = [
+            'filters' => $filters
+        ];
+        $product = Product::getOne($queryParams);
 
         $params = [
             'header' => 'Product card',

@@ -11,32 +11,49 @@ class OrderController extends Controller
     public function get(int $userId = 0)
     {
 
-        $filter = [];
+        $filters = [];
         if ($userId) {
-            $filter[] = [
+            $filters[] = [
                 'col'   => 'user_id',
                 'oper'  => '=',
                 'value' => $userId,
             ];
         }
-        $sortFields[] = ['col' => ' create_data', 'direction' => 'DESC'];
-        OrderProduct::setQueryParams([], $filter, 'AND', $sortFields);
-        $orders = Order::getAllArray();
+        $sortFields[] = [
+            'col' => ' create_data',
+            'direction' => 'DESC'
+        ];
+        $queryParams = [
+            'filters' => $filters,
+            'sortFields' => $sortFields,
+        ];
+
+        $orders = Order::getAllArray($queryParams);
 
 
         foreach ($orders as &$order) {
-            $filter = [];
-            $filter[] = [
+            $filtersOrderProduct = [];
+            $filtersOrderProduct[] = [
                 'col'   => 'order_id',
                 'oper'  => '=',
                 'value' => $order['id'],
             ];
-            OrderProduct::setQueryParams([], $filter);
-            $order['products'] = OrderProduct::getAllArray();
+            $queryParams = [
+                'filters' => $filtersOrderProduct,
+            ];
 
+            $order['products'] = OrderProduct::getAllArray($queryParams);
             foreach ($order['products'] as &$orderProduct) {
-                Product::setQueryParams();
-                $product = Product::getOne('id', $orderProduct['product_id']);
+                $filtersProduct = [];
+                $filtersProduct[] = [
+                    'col'   => 'id',
+                    'oper'  => '=',
+                    'value' => $orderProduct['product_id'],
+                ];
+                $queryParams = [
+                    'filters' => $filtersProduct
+                ];
+                $product = Product::getOne($queryParams);
                 $orderProduct['name'] = $product->name;
                 $orderProduct['price'] = $product->price;
                 $orderProduct['sum'] = $orderProduct['price'] * $orderProduct['quantity'];

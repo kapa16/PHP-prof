@@ -18,7 +18,6 @@ class PersonalController extends Controller
         $ordersController = new OrderController();
         $orders = $ordersController->get($authenticatedUser->id);
 
-        OrderStatus::setQueryParams();
         $statuses = OrderStatus::getAllArray();
 
         $params = [
