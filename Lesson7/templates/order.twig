@@ -1,0 +1,31 @@
+
+{% for order in orders %}
+<div class="order_wrapper">
+    <h3>Заказ №{{order.id}}, статус: <span class="order_status">{{order.status}}</span></h3>
+    {{ADMINORDERCONTROL}}
+    <div class="row table_row">
+        <div class="col-8 table_column">Товар</div>
+        <div class="col-1 table_column">Количество</div>
+        <div class="col-1 table_column">Цена</div>
+        <div class="col-1 table_column">Сумма</div>
+        <div class="col-1 table_column"></div>
+    </div>
+
+    {% for product in order.products %}
+        <div class="row table_row {% if product.deleted %}table_row_deleted{% endif %}">
+            <div class="col-8 table_column">{{product.name}}</div>
+            <div class="col-1 table_column">{{product.quantity}}</div>
+            <div class="col-1 table_column">{{product.price}}</div>
+            <div class="col-1 table_column">{{product.sum}}</div>
+            <div class="col-1 table_column">
+                <button class="btn btn-primary order__product_{% if product.deleted %}retrieve{% else %}remove{% endif %}"
+                        data-id="{{product.id}}">
+                    {% if product.deleted %}Вернуть{% else %}Удалить{% endif %}
+                </button>
+            </div>
+        </div>
+    {% endfor %}
+
+</div>
+{% endfor %}
+

@@ -1,0 +1,29 @@
+{% extends "layout.twig" %}
+
+{% block main %}
+{{PRODUCTADD}}
+<div class="products__catalog row justify-content-between">
+    {% for product in products %}
+    <div class="card col-xs-12 col-md-6 col-lg-4 col-xl-3 py-3">
+        <a href="/product?product-id={{product.id}}">
+            <img
+                    src="{{product.image}}"
+                    alt="{{product.name}}"
+                    class="product__image card-img-top"
+                    title="Просмотр товара"
+            >
+            <div class="card-body">
+                <h5 class="card-title">{{product.name}}</h5>
+                <p class="card-text">Цена: {{product.price}}</p>
+                <button class="btn btn-primary btn-buy" data-id="{{product.id}}" data-name="{{product.name}}"
+                        data-price="{{product.price}}">
+                    Купить
+                </button>
+            </div>
+        </a>
+
+    </div>
+    {% endfor %}
+
+</div>
+{% endblock %}
