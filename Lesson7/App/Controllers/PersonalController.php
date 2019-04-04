@@ -15,18 +15,23 @@ class PersonalController extends Controller
             header('Location: /login');
         }
 
-        $ordersController = new OrderController();
-        $orders = $ordersController->get($authenticatedUser->id);
+        $orders = App::getInstance()
+            ->getRepository('Order')
+            ->getOrdersList($authenticatedUser->id);
 
         $statuses = App::getInstance()
             ->getRepository('OrderStatus')
             ->getAllArray();
 
+        foreach ($orders as $order) {
+            
+        }
+
         $params = [
-            'header' => 'Personal area',
-            'user' => $authenticatedUser,
-            'orders' => $orders,
-            'statuses' => $statuses
+            'header'   => 'Personal area',
+            'user'     => $authenticatedUser,
+            'orders'   => $orders,
+            'statuses' => $statuses,
         ];
 
         return $this->render($params);
