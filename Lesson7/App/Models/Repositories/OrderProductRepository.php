@@ -1,10 +1,8 @@
 <?php
 
-
 namespace App\Models\Repositories;
 
-
-use App\Models\Order;
+use App\Models\OrderProduct;
 
 class OrderProductRepository extends Repository
 {
@@ -16,6 +14,6 @@ class OrderProductRepository extends Repository
 
     protected function getEntityClass(): string
     {
-        return Order::class;
+        return OrderProduct::class;
     }
 }

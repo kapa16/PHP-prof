@@ -48,7 +48,7 @@ window.onload = () => {
       },
       success: () => {
         $target.closest('.table_row').addClass('table_row_deleted');
-        $target.text('Вернуть');
+        $target.text('Retrieve');
       }
     })
   });
@@ -66,7 +66,7 @@ window.onload = () => {
       },
       success: () => {
         $target.closest('.table_row').removeClass('table_row_deleted');
-        $target.text('Удалить');
+        $target.text('Remove');
       }
     })
   });

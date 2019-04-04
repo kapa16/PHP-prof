@@ -28,6 +28,7 @@ class PersonalController extends Controller
             'orders' => $orders,
             'statuses' => $statuses
         ];
+
         return $this->render($params);
     }
 }
