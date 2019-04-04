@@ -2,12 +2,8 @@
 
 namespace App\Models;
 
-class OrderStatus extends Model
+class OrderStatus extends DataEntity
 {
     public $status;
 
-    protected static function getTableName(): string
-    {
-        return 'order_status';
-    }
 }

@@ -10,6 +10,11 @@
   padding: 5px;
 }
 
+.gallery__wrapper {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
 .gallery__image {
   cursor: pointer;
   width: 300px;

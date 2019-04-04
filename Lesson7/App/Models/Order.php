@@ -2,20 +2,16 @@
 
 namespace App\Models;
 
+use App\App;
 use RuntimeException;
 
-class Order extends Model
+class Order extends DataEntity
 {
     public $status_id;
     public $user_id;
     public $deleted;
     public $create_data;
     public $change_data;
-
-    protected static function getTableName(): string
-    {
-        return 'order';
-    }
 
     public static function create(int $userId = null, array $orderProducts = []): bool
     {
@@ -26,7 +22,7 @@ class Order extends Model
 
         $order = new self($orderData);
 
-        if (!$order->save()) {
+        if (!App::getInstance()->getRepository('Order')->save($order)) {
             throw new RuntimeException('Error order create');
         }
 
@@ -38,7 +34,7 @@ class Order extends Model
                 'fixed_price' => 0
             ];
             $product = new OrderProduct($data);
-            if (!$product->save()) {
+            if (!App::getInstance()->getRepository('OrderProduct')->save($product)) {
                 throw new RuntimeException('Error order product create');
             }
         }

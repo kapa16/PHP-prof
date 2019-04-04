@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
-class Product extends Model
+use App\Models\Repositories\ProductRepository;
+
+class Product extends DataEntity
 {
     public $name;
     public $description;
@@ -10,10 +12,6 @@ class Product extends Model
     public $image;
     public $category_id;
 
-    protected static function getTableName(): string
-    {
-        return 'products';
-    }
 
     public static function fillTestProduct(): void
     {
@@ -25,7 +23,7 @@ class Product extends Model
             $productData['image'] = 'http://via.placeholder.com/200';
             $productData['category_id'] = 1;
             $product = new self($productData);
-            $product->insert();
+            (new ProductRepository())->insert($product);
         }
     }
 }

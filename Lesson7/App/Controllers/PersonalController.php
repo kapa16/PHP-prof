@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Models\OrderStatus;
+use App\App;
 
 class PersonalController extends Controller
 {
@@ -18,7 +18,9 @@ class PersonalController extends Controller
         $ordersController = new OrderController();
         $orders = $ordersController->get($authenticatedUser->id);
 
-        $statuses = OrderStatus::getAllArray();
+        $statuses = App::getInstance()
+            ->getRepository('OrderStatus')
+            ->getAllArray();
 
         $params = [
             'header' => 'Personal area',

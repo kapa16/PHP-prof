@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\App;
 use App\Models\User;
 
 class UserController extends Controller
@@ -38,10 +39,22 @@ class UserController extends Controller
         if (empty($login) || empty($password)) {
             $this->loginError('nodata');
         }
-        $user = User::getOne('login', $login);
+
+        $filters[] = [
+            'col'   => 'login',
+            'oper'  => '=',
+            'value' => $login,
+        ];
+
+        $user = App::getInstance()
+            ->getRepository('User')
+            ->setQueryParams(null, $filters)
+            ->getOne();
+
         if (!$user) {
             $this->loginError('nouser');
         }
+
         $user->authentication($password);
         if (!$user->authorized()){
             $this->loginError('nouser');

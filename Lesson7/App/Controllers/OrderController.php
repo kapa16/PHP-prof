@@ -2,13 +2,11 @@
 
 namespace App\Controllers;
 
-use App\Models\Order;
-use App\Models\OrderProduct;
-use App\Models\Product;
+use App\App;
 
 class OrderController extends Controller
 {
-    public function get(int $userId = 0)
+    public function get(int $userId = 0): array
     {
 
         $filters = [];
@@ -23,37 +21,36 @@ class OrderController extends Controller
             'col' => ' create_data',
             'direction' => 'DESC'
         ];
-        $queryParams = [
-            'filters' => $filters,
-            'sortFields' => $sortFields,
-        ];
 
-        $orders = Order::getAllArray($queryParams);
-
+        $orders = App::getInstance()
+            ->getRepository('Order')
+            ->setQueryParams(null, $filters, null, $sortFields)
+            ->getAllArray();
 
         foreach ($orders as &$order) {
-            $filtersOrderProduct = [];
-            $filtersOrderProduct[] = [
+            $filters = [];
+            $filters[] = [
                 'col'   => 'order_id',
                 'oper'  => '=',
                 'value' => $order['id'],
             ];
-            $queryParams = [
-                'filters' => $filtersOrderProduct,
-            ];
 
-            $order['products'] = OrderProduct::getAllArray($queryParams);
+            $order['products'] = App::getInstance()
+                ->getRepository('OrderProduct')
+                ->setQueryParams(null, $filters)
+                ->getAllArray();
             foreach ($order['products'] as &$orderProduct) {
-                $filtersProduct = [];
-                $filtersProduct[] = [
+                $filters = [];
+                $filters[] = [
                     'col'   => 'id',
                     'oper'  => '=',
                     'value' => $orderProduct['product_id'],
                 ];
-                $queryParams = [
-                    'filters' => $filtersProduct
-                ];
-                $product = Product::getOne($queryParams);
+
+                $product = App::getInstance()
+                    ->getRepository('Product')
+                    ->setQueryParams(null, $filters)
+                    ->getOne();
                 $orderProduct['name'] = $product->name;
                 $orderProduct['price'] = $product->price;
                 $orderProduct['sum'] = $orderProduct['price'] * $orderProduct['quantity'];

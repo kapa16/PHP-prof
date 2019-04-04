@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\App;
 use App\Models\Product;
 use RuntimeException;
 
@@ -11,15 +12,14 @@ class ProductController extends Controller
 
     public function index(): string
     {
-        $limitFrom = $_GET['from'] ?? 0;
-        $limitCount = $_GET['to'] ?? 0;
+        $limitFrom = +$_GET['from'] ?? 0;
+        $limitCount = +$_GET['to'] ?? 0;
 
-        $queryParams = [
-            'limitFrom' => $limitFrom,
-            'limitCount' => $limitCount,
-        ];
+        $products = App::getInstance()
+            ->getRepository('Product')
+            ->setQueryParams(null, null, null, null, $limitFrom, $limitCount)
+            ->getAll();
 
-        $products = Product::getAll($queryParams);
         if (!count($products)) {
             Product::fillTestProduct();
             header('Location: /product');
@@ -46,10 +46,11 @@ class ProductController extends Controller
             'oper'  => '=',
             'value' => $productId,
         ];
-        $queryParams = [
-            'filters' => $filters
-        ];
-        $product = Product::getOne($queryParams);
+
+        $product = App::getInstance()
+            ->getRepository('Product')
+            ->setQueryParams(null, $filters)
+            ->getOne();
 
         $params = [
             'header' => 'Product card',

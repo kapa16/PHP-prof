@@ -2,8 +2,9 @@
 
 namespace App\Controllers\Api;
 
+use App\App;
 use App\Models\Order;
-use App\Models\Product;
+use App\Models\Repositories\ProductRepository;
 use App\Models\User;
 use RuntimeException;
 
@@ -33,25 +34,25 @@ class CartController extends ApiController
 
     public function get(): array
     {
-        $filter = [];
+        $filters = [];
         foreach ($this->cart as $product_id => $cartItem) {
-            $filter[] = [
+            $filters[] = [
                 'col'   => 'id',
                 'oper'  => '=',
                 'value' => $product_id,
             ];
         }
-
-        $select = [
+        $selectFields = [
             'id',
             'name',
             'price',
         ];
 
-        $selectFields = $select;
-        $filters = $filter;
-        Product::setQueryParams($selectFields, $filters, 'OR');
-        $products = Product::getAllArray();
+        $products = App::getInstance()
+            ->getRepository('Product')
+            ->setQueryParams($selectFields, $filters, 'OR')
+            ->getAllArray();
+
         foreach ($products as &$product) {
             $product['quantity'] = $this->cart[$product['id']];
         }
@@ -64,7 +65,15 @@ class CartController extends ApiController
             throw new RuntimeException('No product id');
         }
 
-        $product = Product::getOne('id', $this->product_id);
+        $filters[] = [
+            'col'   => 'id',
+            'oper'  => '=',
+            'value' => $this->product_id,
+        ];
+        $product = App::getInstance()
+            ->getRepository('Product')
+            ->setQueryParams(null, $filters)
+            ->getOne();
         if (!$product) {
             throw new RuntimeException('No product find');
         }

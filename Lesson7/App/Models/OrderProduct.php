@@ -4,7 +4,7 @@
 namespace App\Models;
 
 
-class OrderProduct extends Model
+class OrderProduct extends DataEntity
 {
     public $order_id;
     public $product_id;

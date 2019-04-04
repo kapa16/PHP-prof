@@ -12,7 +12,7 @@ class OrderController extends ApiController
     public function removeProduct(): void
     {
         $id = $_POST['postData']['id'] ?? '';
-        $orderProduct = OrderProduct::getOne('id', $id);
+        $orderProduct = Order(new ProductRepository())->getOne('id', $id);
         $orderProduct->deleted = 1;
         $orderProduct->save();
     }

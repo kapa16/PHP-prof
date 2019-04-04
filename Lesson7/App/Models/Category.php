@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class Category extends Model
+class Category extends DataEntity
 {
     protected $name;
     protected $discount;

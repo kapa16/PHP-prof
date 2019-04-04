@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\App;
+
 /**
  * Class Users - пользователи сайта
  * @package App\Models
  */
-class User extends Model
+class User extends DataEntity
 {
     public $login;
     public $password;
@@ -15,10 +17,6 @@ class User extends Model
     public $email;
     public $role;
 
-    protected static function getTableName(): string
-    {
-        return 'users';
-    }
 
     public function authentication(string $password): void
     {
@@ -56,8 +54,9 @@ class User extends Model
 
     public function insert(): bool
     {
-        $this->excludeQueryParams[] = 'passwordCheck';
-        return parent::insert();
+        return App::getInstance()
+            ->getRepository('User')
+            ->insert($this);
     }
 
     public static function getAuthorized()

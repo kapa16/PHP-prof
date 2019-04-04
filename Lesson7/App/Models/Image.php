@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class Image extends Model
+class Image extends DataEntity
 {
     public $url;
     public $views;

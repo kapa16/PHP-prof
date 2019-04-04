@@ -2,6 +2,8 @@
 
 namespace App\Traits;
 
+use App\App;
+
 trait SingletonTrait
 {
     private static $instance;
@@ -14,7 +16,7 @@ trait SingletonTrait
 
     private function __wakeup() {}
 
-    public static function getInstance()
+    public static function getInstance(): self
     {
         if (null === static::$instance) {
             static::$instance = new static();

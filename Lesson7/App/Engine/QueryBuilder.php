@@ -21,16 +21,27 @@ class QueryBuilder
 
     /**
      * QueryBuilder constructor.
-     * @param $queryParams
+     * @param array|string $selectFields
+     * @param array $filters
+     * @param string $filterLogicalOperator
+     * @param int $limitFrom
+     * @param int $limitCount
+     * @param array $sortFields
      */
-    public function __construct(array $queryParams = [])
+    public function setQueryParams(
+        ?array $selectFields,
+        ?array $filters,
+        ?string $filterLogicalOperator,
+        ?array $sortFields,
+        ?int $limitFrom,
+        ?int $limitCount): void
     {
-        $this->selectFields = $queryParams['selectFields'] ?? [];
-        $this->filters = $queryParams['filters'] ?? [];
-        $this->filterLogicalOperator = $queryParams['filterLogicalOperator'] ?? 'AND';
-        $this->limitFrom = $queryParams['limitFrom'] ?? 0;
-        $this->limitCount = $queryParams['limitCount'] ?? 0;
-        $this->sortFields = $queryParams['sortFields'] ?? [];
+        $this->selectFields = $selectFields;
+        $this->filters = $filters;
+        $this->filterLogicalOperator = $filterLogicalOperator;
+        $this->limitFrom = $limitFrom;
+        $this->limitCount = $limitCount;
+        $this->sortFields = $sortFields;
     }
 
     protected function getSelectFieldsString(): string
@@ -61,18 +72,14 @@ class QueryBuilder
             return '';
         }
         $queries = [];
-        //Проходимся по всем фильтрам
         foreach ($filters as $filter) {
-            //Перебираем оператор
             switch ($filter['oper']) {
                 case 'IS NULL':
                 case 'IS NOT NULL':
-                    //Для работы с NULL $value не нужно
                     $queries[] = "{$filter['col']} {$filter['oper']}";
                     break;
                 case 'IN':
                 case 'NOT IN':
-                    //Для работы с IN $value должно иметь вид (1,2,3)
                     $value = $filter['value'];
                     if (is_array($value)) {
                         $value = '(' . implode(', ', $value) . ')';
@@ -80,12 +87,10 @@ class QueryBuilder
                     $queries[] = "{$filter['col']} {$filter['oper']} {$value}";
                     break;
                 default:
-                    //В остальных случаях без обработки
                     $queries[] = "{$filter['col']} {$filter['oper']} '{$filter['value']}'";
                     break;
-            };
+            }
         }
-        //Добавляем выборку в запрос
         return ' WHERE ' . implode(' ' . $filterLogicalOperator . ' ', $queries);
     }
 
@@ -116,17 +121,12 @@ class QueryBuilder
 
     public function generateQuery($tableName): string
     {
-        $sql = 'SELECT ';
-
-        $sql .= $this->getSelectFieldsString();
-
-        $sql .= ' FROM `' . $tableName . '`';
-
-        $sql .= $this->getFilterString();
-
-        $sql .= $this->getOrderString();
-
-        $sql .= $this->getLimitString();
+        $sql = 'SELECT '
+            . $this->getSelectFieldsString()
+            . ' FROM `' . $tableName . '`'
+            . $this->getFilterString()
+            . $this->getOrderString()
+            . $this->getLimitString();
 
         return $sql;
     }

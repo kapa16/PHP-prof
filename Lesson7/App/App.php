@@ -3,11 +3,29 @@
 namespace App;
 
 use App\Controllers\IndexController;
+use App\Models\Repositories\Repository;
+use App\Traits\SingletonTrait;
 use RuntimeException;
 
 class App
 {
-    public function __invoke()
+    use SingletonTrait;
+
+    protected $repositories = [];
+
+    public function getRepository(string $repositoryName): Repository
+    {
+        $repositoryClass = 'App\\Models\\Repositories\\' . $repositoryName . 'Repository';
+        if (!class_exists($repositoryClass)) {
+            throw new RuntimeException('Unknown class');
+        }
+        if (empty($this->repositories[$repositoryClass])) {
+            $this->repositories[$repositoryClass] = new $repositoryClass();
+        }
+        return $this->repositories[$repositoryClass];
+    }
+
+    public function run(): void
     {
         try {
             $path = $_REQUEST['path'] ?? '';
