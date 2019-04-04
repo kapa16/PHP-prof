@@ -23,10 +23,6 @@ class PersonalController extends Controller
             ->getRepository('OrderStatus')
             ->getAllArray();
 
-        foreach ($orders as $order) {
-            
-        }
-
         $params = [
             'header'   => 'Personal area',
             'user'     => $authenticatedUser,

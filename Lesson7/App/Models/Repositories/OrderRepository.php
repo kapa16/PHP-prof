@@ -40,6 +40,10 @@ class OrderRepository extends Repository
             ->setQueryParams(null, $filters, null, $sortFields)
             ->getAllArray();
 
+        $statuses = App::getInstance()
+            ->getRepository('OrderStatus')
+            ->getAllArray();
+
         foreach ($orders as &$order) {
             $filters = [];
             $filters[] = [
@@ -47,6 +51,9 @@ class OrderRepository extends Repository
                 'oper'  => '=',
                 'value' => $order['id'],
             ];
+
+            $indexStatus = array_search($order['status_id'], array_column($statuses, 'id'), false);
+            $order['status'] = ucfirst($statuses[$indexStatus]['status']);
 
             $order['products'] = App::getInstance()
                 ->getRepository('OrderProduct')

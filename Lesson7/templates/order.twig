@@ -1,7 +1,7 @@
 
 {% for order in orders %}
 <div class="order_wrapper">
-    <h3>Order №{{order.id}}, status: <span class="order_status">{{order.status_id}}</span></h3>
+    <h3>Order №{{order.id}}, status: <span class="order_status">{{order.status}}</span></h3>
     <form action="" method="post">
         <select name="status">
             {% for status in statuses %}
