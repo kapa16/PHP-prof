@@ -21,9 +21,8 @@ window.onload = () => {
     const orderStatus = parseInt($(evt.target).parent().find('option:selected').val());
     orderStatusFull = orderStatusFull.replace( /\d+\.\s/g, "" ).toLowerCase();
     $.post({
-      url: '/api/order.php',
+      url: '/api/order',
       data: {
-        apiMethod: 'changeOrderStatus',
         postData: {
           id: orderId,
           status: orderStatus
@@ -41,7 +40,6 @@ window.onload = () => {
     $.post({
       url: `/api/order/removeProduct?id=${orderProductId}`,
       data: {
-        apiMethod: 'deleteProductFromOrder',
         postData: {
           id: orderProductId
         }
@@ -59,7 +57,6 @@ window.onload = () => {
     $.post({
       url: '/api/order/retrieveProduct?id=${orderProductId}',
       data: {
-        apiMethod: 'retrieveProductFromOrder',
         postData: {
           id: orderProductId
         }

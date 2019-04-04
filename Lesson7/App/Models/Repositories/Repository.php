@@ -17,7 +17,6 @@ abstract class Repository
 
     /**
      * Repository constructor.
-     * @param QueryBuilder $queryBuilder
      */
     public function __construct()
     {

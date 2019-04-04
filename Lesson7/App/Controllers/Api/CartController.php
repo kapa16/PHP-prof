@@ -23,7 +23,7 @@ class CartController extends ApiController
             $this->cart = unserialize($_COOKIE['cart'], [false]);
         }
         $this->product_id = $_POST['postData']['product_id'] ?? '';
-        $this->quantity = $_POST['postData']['quantity'] ?? 0;
+        $this->quantity = (int) ($_POST['postData']['quantity'] ?? '');
     }
 
     private function save()

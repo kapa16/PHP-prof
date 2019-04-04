@@ -3,20 +3,28 @@
 namespace App\Controllers\Api;
 
 
-use App\Models\Product;
+use App\App;
 
 class ProductController extends ApiController
 {
     protected function actionGetProducts(): void
     {
-        Product::$limitFrom = +$_GET['from'] ?? 0;
-        Product::$limitCount = +$_GET['to'] ?? 0;
-        $this->data = Product::getLimit();
+        $limitFrom = (int)($_GET['from'] ?? '');
+        $limitCount = (int)($_GET['to'] ?? '');
+
+        $this->data = App::getInstance()
+            ->getRepository('Product')
+            ->setQueryParams(null, null, null, null, $limitFrom, $limitCount)
+            ->getAll();
     }
 
     protected function actionGetCountProducts(): void
     {
-        $this->data = Product::getCountRows();
+        $selectFields[] = ['COUNT(*)' => 'count'];
+        $this->data = App::getInstance()
+            ->getRepository('Product')
+            ->setQueryParams($selectFields)
+            ->getCountRows();
     }
 
     public function __invoke()
