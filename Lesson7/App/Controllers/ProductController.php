@@ -12,8 +12,8 @@ class ProductController extends Controller
 
     public function index(): string
     {
-        $limitFrom = +$_GET['from'] ?? 0;
-        $limitCount = +$_GET['to'] ?? 0;
+        $limitFrom = (int) ($_GET['from'] ?? '');
+        $limitCount = (int) ($_GET['to'] ?? '');
 
         $products = App::getInstance()
             ->getRepository('Product')

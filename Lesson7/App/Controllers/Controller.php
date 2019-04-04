@@ -24,7 +24,8 @@ abstract class Controller
             return;
         }
         $visitedPages = $_SESSION['visited_pages'] ?? [];
-        $visitedPages[] = str_replace('\\', '', $_REQUEST['path']) ?: 'main';
+        $path = $_REQUEST['path'] ?? 'main';
+        $visitedPages[] = str_replace('\\', '', $path);
         while (count($visitedPages) > 5) {
             array_shift($visitedPages);
         }
