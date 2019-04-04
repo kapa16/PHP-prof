@@ -11,7 +11,8 @@ use RuntimeException;
 
 abstract class Repository
 {
-    protected $excludeQueryParams;
+    /** @var array $excludeQueryParams */
+    protected $excludeQueryParams = [];
     /** @var QueryBuilder $queryBuilder */
     protected $queryBuilder;
 

@@ -21,7 +21,7 @@ window.onload = () => {
     const orderStatus = parseInt($(evt.target).parent().find('option:selected').val());
     orderStatusFull = orderStatusFull.replace( /\d+\.\s/g, "" ).toLowerCase();
     $.post({
-      url: '/api/order',
+      url: '/api/order/changeOrderStatus',
       data: {
         postData: {
           id: orderId,

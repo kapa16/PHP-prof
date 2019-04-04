@@ -8,7 +8,7 @@
             <option {% if status.id == order.status_id %} selected {% endif %}>{{status.id}}. {{status.status}}</option>
             {% endfor %}
         </select>
-        <button class="btn btn-primary order__status_change" type="submit" data-id="{{ORDERID}}">Change order status</button>
+        <button class="btn btn-primary order__status_change" type="submit" data-id="{{order.id}}">Change order status</button>
     </form>
     <div class="row table_row">
         <div class="col-8 table_column">Product</div>
@@ -23,7 +23,7 @@
             <div class="col-8 table_column">{{product.name}}</div>
             <div class="col-1 table_column">{{product.quantity}}</div>
             <div class="col-1 table_column">{{product.price}}</div>
-            <div class="col-1 table_column">{{product.sum}}</div>
+            <div class="col-1 table_column">{{product.quantity * product.price}}</div>
             <div class="col-1 table_column">
                 <button class="btn btn-primary order__product_{% if product.deleted %}retrieve{% else %}remove{% endif %}"
                         data-id="{{product.id}}">

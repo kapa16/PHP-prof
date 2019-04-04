@@ -44,4 +44,28 @@ class OrderController extends ApiController
         $orderProduct->deleted = 0;
         $this->saveOrderProduct($orderProduct);
     }
+
+    public function changeOrderStatus(): array
+    {
+        $id = (int) ($_REQUEST['postData']['id'] ?? '');
+        $orderStatus = (int) ($_REQUEST['postData']['status'] ?? '');
+
+        $orderRepository = App::getInstance()->getRepository('Order');
+        $filters[] = [
+            'col'   => 'id',
+            'oper'  => '=',
+            'value' => $id,
+        ];
+        $order = $orderRepository
+            ->setQueryParams(null, $filters)
+            ->getOne();
+
+        $order->status_id = $orderStatus;
+        $result = $orderRepository->save($order);
+
+        if (!$result) {
+            return $this->error();
+        }
+        return $this->success();
+    }
 }
