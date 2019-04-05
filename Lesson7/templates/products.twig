@@ -1,9 +1,9 @@
 {% extends "layout.twig" %}
 
 {% block main %}
-    {% if catalog == true %}
-        {% if admin == false %}
-            <a href="/admin/createProduct.php" class="product__control_btn">Добавить товар</a>
+    {% if type == 'catalog' %}
+        {% if admin == true %}
+            <a href="/product/create" class="product__control_btn">Добавить товар</a>
         {% endif %}
         <div class="products__catalog row justify-content-between">
             {% for product in products %}
@@ -29,13 +29,13 @@
                 </div>
             {% endfor %}
         </div>
-    {% else %}
+    {% elseif type == 'card' %}
         <div class="product__view_wrap">
-            {% if admin == false %}
+            {% if admin == true %}
                 <div class="product__control">
-                    <a href="/admin/updateProduct.php?product-id={{ PRODUCTID }}" class="product__control_btn">Редактировать
+                    <a href="/product/edit?product-id={{ product.id }}" class="product__control_btn">Редактировать
                         товар</a>
-                    <a href="/admin/deleteProduct.php?product-id={{ PRODUCTID }}" class="product__control_btn">Удалить
+                    <a href="/product/delete?product-id={{ product.id }}" class="product__control_btn">Удалить
                         товар</a>
                 </div>
             {% endif %}
@@ -57,5 +57,32 @@
                 <p>Description: {{ product.description }}</p>
             </div>
         </div>
+    {% elseif type == 'edit' %}
+        <form action="" method="post">
+            <div class="form-group">
+                <label for="product__name">Название товара: </label>
+                <input id="product__name" type="text" name="name" value="{{ product.name }}" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="product__description">Описание: </label>
+                <input id="product__description" type="text" name="description" value="{{ product.description }}"
+                       class="form-control">
+
+            </div>
+            <div class="form-group">
+                <label for="product__price">Цена:</label>
+                <input id="product__price" type="number" step="0.01" name="price" value="{{ product.price }}"
+                       class="form-control">
+
+            </div>
+            <div class="form-group">
+                <label for="product__image">Изображение: </label>
+                <input id="product__image" type="text" name="image" value="{{ product.image }}" class="form-control">
+
+            </div>
+            <button class="btn btn-primary" type="submit">{{ buttonTitle }}</button>
+        </form>
+
+        <a href="/">На главную</a>
     {% endif %}
 {% endblock %}

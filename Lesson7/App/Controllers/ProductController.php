@@ -28,14 +28,14 @@ class ProductController extends Controller
 
         $params = [
             'header' => 'Products catalog',
-            'catalog' => true,
+            'type' => 'catalog',
             'admin' => true, // TODO get user role
             'products' => $products
         ];
         return $this->render($params);
     }
 
-    public function card(): string
+    protected function getProductById()
     {
         if (empty($_GET['product-id'])) {
             throw new RuntimeException('No product id');
@@ -47,17 +47,43 @@ class ProductController extends Controller
             'value' => $productId,
         ];
 
-        $product = App::getInstance()
+        return App::getInstance()
             ->getRepository('Product')
             ->setQueryParams(null, $filters)
             ->getOne();
+    }
+
+    public function card(): string
+    {
+        $product = $this->getProductById();
 
         $params = [
             'header' => 'Product card',
-            'catalog' => false,
+            'type' => 'card',
             'admin' => true, // TODO get user role
             'product' => $product
         ];
         return $this->render($params);
+    }
+
+    public function edit(): string
+    {
+        $product = $this->getProductById();
+
+        $params = [
+            'header' => 'Product editing',
+            'type' => 'edit',
+            'buttonTitle' => 'Update',
+            'admin' => true, // TODO get user role
+            'product' => $product
+        ];
+        return $this->render($params);
+    }
+
+    public function delete()
+    {
+        $product = $this->getProductById();
+
+
     }
 }
