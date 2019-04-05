@@ -63,4 +63,9 @@ class User extends DataEntity
     {
         return $_SESSION['user'] ?? '';
     }
+
+    public static function adminRole(): bool
+    {
+        return (bool) ($_SESSION['user']->role ?? '');
+    }
 }

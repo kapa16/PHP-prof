@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\App;
 use App\Models\Product;
+use App\Models\User;
 use RuntimeException;
 
 class ProductController extends Controller
@@ -15,9 +16,18 @@ class ProductController extends Controller
         $limitFrom = (int) ($_GET['from'] ?? '');
         $limitCount = (int) ($_GET['to'] ?? '');
 
+        $filter = [];
+        if (!User::adminRole()) {
+            $filter[] = [
+                'col'   => 'deleted',
+                'oper'  => '=',
+                'value' => 0,
+            ];
+        }
+
         $products = App::getInstance()
             ->getRepository('Product')
-            ->setQueryParams(null, null, null, null, $limitFrom, $limitCount)
+            ->setQueryParams(null, $filter, null, null, $limitFrom, $limitCount)
             ->getAll();
 
         if (!count($products)) {
@@ -29,7 +39,7 @@ class ProductController extends Controller
         $params = [
             'header' => 'Products catalog',
             'type' => 'catalog',
-            'admin' => true, // TODO get user role
+            'admin' => User::adminRole(),
             'products' => $products
         ];
         return $this->render($params);
@@ -60,7 +70,7 @@ class ProductController extends Controller
         $params = [
             'header' => 'Product card',
             'type' => 'card',
-            'admin' => true, // TODO get user role
+            'admin' => User::adminRole(),
             'product' => $product
         ];
         return $this->render($params);
@@ -68,22 +78,42 @@ class ProductController extends Controller
 
     public function edit(): string
     {
+        if (!User::adminRole()) {
+            throw new RuntimeException('No access');
+        }
         $product = $this->getProductById();
 
         $params = [
             'header' => 'Product editing',
             'type' => 'edit',
             'buttonTitle' => 'Update',
-            'admin' => true, // TODO get user role
+            'admin' => User::adminRole(),
             'product' => $product
         ];
         return $this->render($params);
     }
 
-    public function delete()
+    protected function changeDeleted(int $deleted = 0): void
     {
+        if (!User::adminRole()) {
+            throw new RuntimeException('No access');
+        }
         $product = $this->getProductById();
+        $product->deleted = $deleted;
+        App::getInstance()
+            ->getRepository('Product')
+            ->save($product);
+    }
 
+    public function delete(): void
+    {
+        $this->changeDeleted(1);
+        header('Location: /product');
+    }
 
+    public function restore(): void
+    {
+        $this->changeDeleted();
+        header('Location: /product');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\App;
 use App\Models\Repositories\ProductRepository;
 
 class Product extends DataEntity
@@ -11,7 +12,7 @@ class Product extends DataEntity
     public $price;
     public $image;
     public $category_id;
-
+    public $deleted;
 
     public static function fillTestProduct(): void
     {
@@ -23,7 +24,9 @@ class Product extends DataEntity
             $productData['image'] = 'http://via.placeholder.com/200';
             $productData['category_id'] = 1;
             $product = new self($productData);
-            (new ProductRepository())->insert($product);
+            App::getInstance()
+                ->getRepository('product')
+                ->insert($product);
         }
     }
 }

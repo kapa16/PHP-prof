@@ -3,12 +3,18 @@
 {% block main %}
     {% if type == 'catalog' %}
         {% if admin == true %}
-            <a href="/product/create" class="product__control_btn">Добавить товар</a>
+            <a href="/product/create" class="btn btn-primary mb-1" role="button">Добавить товар</a>
         {% endif %}
         <div class="products__catalog row justify-content-between">
             {% for product in products %}
                 <div class="card col-xs-12 col-md-6 col-lg-4 col-xl-3 py-3">
                     <a href="/product/card?product-id={{ product.id }}">
+                        {% if product.deleted == true %}
+                            <div class="d-flex justify-content-between mb-1">
+                                <p class="text-danger">Product deleted</p>
+                                <a href="/product/restore?product-id={{ product.id }}" class="btn btn-success" role="button">Restore</a>
+                            </div>
+                        {% endif %}
                         <img
                                 src="{{ product.image }}"
                                 alt="{{ product.name }}"
@@ -33,9 +39,9 @@
         <div class="product__view_wrap">
             {% if admin == true %}
                 <div class="product__control">
-                    <a href="/product/edit?product-id={{ product.id }}" class="product__control_btn">Редактировать
+                    <a href="/product/edit?product-id={{ product.id }}" class="btn btn-primary mr-1" role="button">Редактировать
                         товар</a>
-                    <a href="/product/delete?product-id={{ product.id }}" class="product__control_btn">Удалить
+                    <a href="/product/delete?product-id={{ product.id }}" class="btn btn-danger" role="button">Удалить
                         товар</a>
                 </div>
             {% endif %}
@@ -58,7 +64,7 @@
             </div>
         </div>
     {% elseif type == 'edit' %}
-        <form action="" method="post">
+        <form action="/product/save" method="post">
             <div class="form-group">
                 <label for="product__name">Название товара: </label>
                 <input id="product__name" type="text" name="name" value="{{ product.name }}" class="form-control">
