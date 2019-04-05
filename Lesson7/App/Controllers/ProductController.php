@@ -48,7 +48,7 @@ class ProductController extends Controller
     protected function getProductById()
     {
         if (empty($_GET['product-id'])) {
-            throw new RuntimeException('No product id');
+            return new Product();
         }
         $productId = (int) $_GET['product-id'];
         $filters[] = [
@@ -76,6 +76,21 @@ class ProductController extends Controller
         return $this->render($params);
     }
 
+    public function create(): string
+    {
+        if (!User::adminRole()) {
+            throw new RuntimeException('No access');
+        }
+
+        $params = [
+            'header' => 'Product creating',
+            'type' => 'edit',
+            'buttonTitle' => 'Create',
+            'admin' => User::adminRole(),
+        ];
+        return $this->render($params);
+    }
+
     public function edit(): string
     {
         if (!User::adminRole()) {
@@ -93,45 +108,4 @@ class ProductController extends Controller
         return $this->render($params);
     }
 
-    public function save()
-    {
-        if (!User::adminRole()) {
-            throw new RuntimeException('No access');
-        }
-        $product = $this->getProductById();
-        foreach ($_POST as $key => $value) {
-            if ((!property_exists($product, $key)) || (!$value)) {
-                continue;
-            }
-            $product->$key = htmlspecialchars($value);
-        }
-        App::getInstance()
-            ->getRepository('Product')
-            ->save($product);
-        header('Location: /product');
-    }
-
-    protected function changeDeleted(int $deleted = 0): void
-    {
-        if (!User::adminRole()) {
-            throw new RuntimeException('No access');
-        }
-        $product = $this->getProductById();
-        $product->deleted = $deleted;
-        App::getInstance()
-            ->getRepository('Product')
-            ->save($product);
-    }
-
-    public function delete(): void
-    {
-        $this->changeDeleted(1);
-        header('Location: /product');
-    }
-
-    public function restore(): void
-    {
-        $this->changeDeleted();
-        header('Location: /product');
-    }
 }

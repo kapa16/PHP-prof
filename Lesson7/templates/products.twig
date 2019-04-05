@@ -12,7 +12,7 @@
                         {% if product.deleted == true %}
                             <div class="d-flex justify-content-between mb-1">
                                 <p class="text-danger">Product deleted</p>
-                                <a href="/product/restore?product-id={{ product.id }}" class="btn btn-success" role="button">Restore</a>
+                                <a href="/productEdit/restore?product-id={{ product.id }}" class="btn btn-success" role="button">Restore</a>
                             </div>
                         {% endif %}
                         <img
@@ -41,7 +41,7 @@
                 <div class="product__control">
                     <a href="/product/edit?product-id={{ product.id }}" class="btn btn-primary mr-1" role="button">Редактировать
                         товар</a>
-                    <a href="/product/delete?product-id={{ product.id }}" class="btn btn-danger" role="button">Удалить
+                    <a href="/productEdit/delete?product-id={{ product.id }}" class="btn btn-danger" role="button">Удалить
                         товар</a>
                 </div>
             {% endif %}
@@ -64,31 +64,33 @@
             </div>
         </div>
     {% elseif type == 'edit' %}
-        <form action="/product/save?product-id={{ product.id }}" method="post">
+        <form action="/productEdit/save?product-id={{ product.id }}" method="post">
             <div class="form-group">
-                <label for="product__name">Название товара: </label>
+                <label for="product__name">Name: </label>
                 <input id="product__name" type="text" name="name" value="{{ product.name }}" class="form-control">
             </div>
             <div class="form-group">
-                <label for="product__description">Описание: </label>
+                <label for="product__description">Description: </label>
                 <input id="product__description" type="text" name="description" value="{{ product.description }}"
                        class="form-control">
-
             </div>
             <div class="form-group">
-                <label for="product__price">Цена:</label>
+                <label for="product__price">Price:</label>
                 <input id="product__price" type="number" step="0.01" name="price" value="{{ product.price }}"
                        class="form-control">
-
             </div>
             <div class="form-group">
-                <label for="product__image">Изображение: </label>
+                <label for="product__image">Image: </label>
                 <input id="product__image" type="text" name="image" value="{{ product.image }}" class="form-control">
-
+            </div>
+            <div class="form-group">
+                <label for="product__price">Category:</label>
+                <input id="product__price" type="number" step="1" name="category_id" value="{{ product.category_id }}"
+                       class="form-control">
             </div>
             <button class="btn btn-primary" type="submit">{{ buttonTitle }}</button>
         </form>
 
-        <a href="/">На главную</a>
+        <a href="/product">Product catalog</a>
     {% endif %}
 {% endblock %}
