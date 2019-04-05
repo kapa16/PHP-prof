@@ -64,7 +64,7 @@
             </div>
         </div>
     {% elseif type == 'edit' %}
-        <form action="/product/save" method="post">
+        <form action="/product/save?product-id={{ product.id }}" method="post">
             <div class="form-group">
                 <label for="product__name">Название товара: </label>
                 <input id="product__name" type="text" name="name" value="{{ product.name }}" class="form-control">
