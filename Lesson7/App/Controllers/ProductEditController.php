@@ -11,17 +11,17 @@ class ProductEditController extends Controller
 {
     protected function getProductById()
     {
-        if (empty($_GET['product-id'])) {
+        $productId = (int) App::call()->request->get('product-id');
+        if (empty($productId)) {
             return new Product();
         }
-        $productId = (int) $_GET['product-id'];
         $filters[] = [
             'col'   => 'id',
             'oper'  => '=',
             'value' => $productId,
         ];
 
-        return App::getInstance()
+        return App::call()
             ->getRepository('Product')
             ->setQueryParams(null, $filters)
             ->getOne();
@@ -30,7 +30,7 @@ class ProductEditController extends Controller
 
     public function save(): void
     {
-        $this->changeProduct($_POST);
+        $this->changeProduct(App::call()->request->post());
         header('Location: /product');
     }
 
@@ -39,6 +39,7 @@ class ProductEditController extends Controller
         if (!User::adminRole()) {
             throw new RuntimeException('No access');
         }
+
         $product = $this->getProductById();
         foreach ($changedData as $key => $value) {
             if (!property_exists($product, $key)) {
@@ -47,7 +48,7 @@ class ProductEditController extends Controller
             $product->$key = htmlspecialchars($value);
         }
 
-        App::getInstance()
+        App::call()
             ->getRepository('Product')
             ->save($product);
     }

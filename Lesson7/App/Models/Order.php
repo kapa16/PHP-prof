@@ -22,7 +22,7 @@ class Order extends DataEntity
 
         $order = new self($orderData);
 
-        if (!App::getInstance()->getRepository('Order')->save($order)) {
+        if (!App::call()->getRepository('Order')->save($order)) {
             throw new RuntimeException('Error order create');
         }
 
@@ -34,7 +34,7 @@ class Order extends DataEntity
                 'fixed_price' => 0
             ];
             $product = new OrderProduct($data);
-            if (!App::getInstance()->getRepository('OrderProduct')->save($product)) {
+            if (!App::call()->getRepository('OrderProduct')->save($product)) {
                 throw new RuntimeException('Error order product create');
             }
         }

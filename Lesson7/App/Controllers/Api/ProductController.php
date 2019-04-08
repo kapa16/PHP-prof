@@ -12,7 +12,7 @@ class ProductController extends ApiController
         $limitFrom = (int)($_GET['from'] ?? '');
         $limitCount = (int)($_GET['to'] ?? '');
 
-        $this->data = App::getInstance()
+        $this->data = App::call()
             ->getRepository('Product')
             ->setQueryParams(null, null, null, null, $limitFrom, $limitCount)
             ->getAll();
@@ -21,7 +21,7 @@ class ProductController extends ApiController
     protected function actionGetCountProducts(): void
     {
         $selectFields[] = ['COUNT(*)' => 'count'];
-        $this->data = App::getInstance()
+        $this->data = App::call()
             ->getRepository('Product')
             ->setQueryParams($selectFields)
             ->getCountRows();

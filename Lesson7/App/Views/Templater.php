@@ -18,7 +18,7 @@ class Templater
      */
     public function __construct()
     {
-        $this->loader = new FilesystemLoader(App::getInstance()->getConfig('templateDir'));
+        $this->loader = new FilesystemLoader(App::call()->getConfig('templateDir'));
         $this->twig = new Environment($this->loader);
     }
 }

@@ -32,8 +32,8 @@ class UserController extends Controller
 
     public function authentication(): void
     {
-        $login = $_POST['login'] ?? '';
-        $password = $_POST['password'] ?? '';
+        $login = App::call()->request->post('login');
+        $password = App::call()->request->post('password');
 
         if (empty($login) || empty($password)) {
             $this->loginError('nodata');
@@ -45,7 +45,7 @@ class UserController extends Controller
             'value' => $login,
         ];
 
-        $user = App::getInstance()
+        $user = App::call()
             ->getRepository('User')
             ->setQueryParams(null, $filters)
             ->getOne();

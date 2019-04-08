@@ -5,7 +5,7 @@ namespace App\Engine;
 use App\Models\User;
 
 /**
- * @property array|string visitedPages
+ * @property array visitedPages
  * @property User|string user
  */
 class Session

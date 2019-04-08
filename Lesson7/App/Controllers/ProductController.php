@@ -25,7 +25,7 @@ class ProductController extends Controller
             ];
         }
 
-        $products = App::getInstance()
+        $products = App::call()
             ->getRepository('Product')
             ->setQueryParams(null, $filter, null, null, $limitFrom, $limitCount)
             ->getAll();
@@ -56,7 +56,7 @@ class ProductController extends Controller
             'value' => $productId,
         ];
 
-        return App::getInstance()
+        return App::call()
             ->getRepository('Product')
             ->setQueryParams(null, $filters)
             ->getOne();

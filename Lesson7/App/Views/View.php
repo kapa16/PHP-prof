@@ -17,7 +17,7 @@ class View
         $this->data = $data;
         $this->data['auth'] = (bool) (User::getAuthorizedUser() ?? '');
         $this->data['admin'] = User::adminRole();
-        $this->twig = App::getInstance()->render->twig;
+        $this->twig = App::call()->render->twig;
     }
 
     public function __get($name)

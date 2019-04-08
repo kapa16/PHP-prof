@@ -4,7 +4,6 @@ namespace App\Controllers\Api;
 
 use App\App;
 use App\Models\Order;
-use App\Models\Repositories\ProductRepository;
 use App\Models\User;
 use RuntimeException;
 
@@ -22,8 +21,9 @@ class CartController extends ApiController
         if (!empty($_COOKIE['cart'])) {
             $this->cart = unserialize($_COOKIE['cart'], [false]);
         }
-        $this->product_id = $_POST['postData']['product_id'] ?? '';
-        $this->quantity = (int) ($_POST['postData']['quantity'] ?? '');
+        $postData = App::call()->request->post('postData');
+        $this->product_id = $postData['product_id'] ?? '';
+        $this->quantity = (int) ($postData['quantity'] ?? '');
     }
 
     private function save()
@@ -48,7 +48,7 @@ class CartController extends ApiController
             'price',
         ];
 
-        $products = App::getInstance()
+        $products = App::call()
             ->getRepository('Product')
             ->setQueryParams($selectFields, $filters, 'OR')
             ->getAllArray();
@@ -70,7 +70,7 @@ class CartController extends ApiController
             'oper'  => '=',
             'value' => $this->product_id,
         ];
-        $product = App::getInstance()
+        $product = App::call()
             ->getRepository('Product')
             ->setQueryParams(null, $filters)
             ->getOne();

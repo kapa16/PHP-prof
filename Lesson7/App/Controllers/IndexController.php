@@ -10,7 +10,7 @@ class IndexController extends Controller
 
     public function index(): string
     {
-        $images = App::getInstance()
+        $images = App::call()
             ->getRepository('Image')
             ->getAllArray();
         $params = [

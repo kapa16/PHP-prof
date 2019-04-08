@@ -24,7 +24,7 @@ class Product extends DataEntity
             $productData['image'] = 'http://via.placeholder.com/200';
             $productData['category_id'] = 1;
             $product = new self($productData);
-            App::getInstance()
+            App::call()
                 ->getRepository('product')
                 ->insert($product);
         }

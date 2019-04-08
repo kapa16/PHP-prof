@@ -3,7 +3,8 @@
 {% block main %}
     {% if type == 'catalog' %}
         {% if admin == true %}
-            <a href="/product/create" class="btn btn-primary mb-1" role="button">Добавить товар</a>
+            <a href="/product/create" class="btn btn-primary mb-1" role="button">Add new product</a>
+            <a href="/category" class="btn btn-primary mb-1" role="button">Category management</a>
         {% endif %}
         <div class="products__catalog row justify-content-between">
             {% for product in products %}

@@ -40,7 +40,7 @@ class OrderRepository extends Repository
             ->setQueryParams(null, $filters, null, $sortFields)
             ->getAllArray();
 
-        $statuses = App::getInstance()
+        $statuses = App::call()
             ->getRepository('OrderStatus')
             ->getAllArray();
 
@@ -55,7 +55,7 @@ class OrderRepository extends Repository
             $indexStatus = array_search($order['status_id'], array_column($statuses, 'id'), false);
             $order['status'] = ucfirst($statuses[$indexStatus]['status']);
 
-            $order['products'] = App::getInstance()
+            $order['products'] = App::call()
                 ->getRepository('OrderProduct')
                 ->setQueryParams(null, $filters)
                 ->getAllArray();
@@ -67,7 +67,7 @@ class OrderRepository extends Repository
                     'value' => $orderProduct['product_id'],
                 ];
 
-                $product = App::getInstance()
+                $product = App::call()
                     ->getRepository('Product')
                     ->setQueryParams(null, $filters)
                     ->getOne();

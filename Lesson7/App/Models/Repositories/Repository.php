@@ -60,7 +60,7 @@ abstract class Repository
     protected function getDb(): Db
     {
         /** @var Db Db */
-        return App::getInstance()->db;
+        return App::call()->db;
     }
 
     protected function getQueryParams($entity): array

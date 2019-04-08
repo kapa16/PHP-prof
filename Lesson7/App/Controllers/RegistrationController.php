@@ -8,6 +8,7 @@
 
 namespace App\Controllers;
 
+use App\App;
 use App\Models\User;
 
 class RegistrationController extends Controller
@@ -21,7 +22,7 @@ class RegistrationController extends Controller
 
     public function send(): void
     {
-        $user = User::registration($_POST);
+        $user = User::registration(App::call()->request->post());
         $page = $user->authorized() ? 'personal' : 'registration';
         header('Location: /' . $page);
     }

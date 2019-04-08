@@ -26,6 +26,11 @@ class App
     private $repositories = [];
     private $components = [];
 
+    public static function call(): self
+    {
+        return self::getInstance();
+    }
+
     public function getRepository(string $repositoryName): Repository
     {
         $repositoryClass = 'App\\Models\\Repositories\\' . $repositoryName . 'Repository';
@@ -100,7 +105,6 @@ class App
                 throw new RuntimeException('Метод не найден');
             }
 
-            $controller->data = $_REQUEST;
             $result = $controller->$method();
 
             if ($api) {

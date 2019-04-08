@@ -20,6 +20,13 @@ class Request
         $this->parseRequest();
     }
 
+    private function fillParams($requestMethod, array $data = []): void
+    {
+        foreach ($data as $key => $value) {
+            $this->params[$requestMethod][$key] = strip_tags($value);
+        }
+    }
+
     public function parseRequest(): void
     {
         $params = [];
@@ -40,8 +47,8 @@ class Request
         $this->methodName = $params[1] ?? 'index';
         $this->controllerName = 'App\\Controllers\\' . $this->api . ucfirst($controller) . 'Controller';
 
-        $this->params['get'] = $_GET;
-        $this->params['post'] = $_POST;
+        $this->fillParams('post', $_POST);
+        $this->fillParams('get', $_GET);
     }
 
     public function getControllerName()
@@ -64,13 +71,19 @@ class Request
         return $this->params;
     }
 
-    public function get($name)
+    public function get(string $name = '')
     {
+        if (empty($name)) {
+            return $this->params['get'];
+        }
         return $this->params['get'][$name] ?? null;
     }
 
-    public function post($name)
+    public function post(string $name = '')
     {
+        if (empty($name)) {
+            return $this->params['post'];
+        }
         return $this->params['post'][$name] ?? null;
     }
 

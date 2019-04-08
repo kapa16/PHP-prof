@@ -16,11 +16,11 @@ class PersonalController extends Controller
             header('Location: /user/login');
         }
 
-        $orders = App::getInstance()
+        $orders = App::call()
             ->getRepository('Order')
             ->getOrdersList((int) $authenticatedUser->id);
 
-        $statuses = App::getInstance()
+        $statuses = App::call()
             ->getRepository('OrderStatus')
             ->getAllArray();
 

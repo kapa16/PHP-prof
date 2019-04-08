@@ -15,7 +15,7 @@ class OrderController extends ApiController
             'value' => $id,
         ];
 
-        return App::getInstance()
+        return App::call()
             ->getRepository('OrderProduct')
             ->setQueryParams(null, $filters)
             ->getOne();
@@ -23,14 +23,14 @@ class OrderController extends ApiController
 
     protected function saveOrderProduct($orderProduct): void
     {
-        App::getInstance()
+        App::call()
             ->getRepository('OrderProduct')
             ->save($orderProduct);
     }
 
     public function removeProduct(): void
     {
-        $id = $_POST['postData']['id'] ?? '';
+        $id = App::call()->request->post('postData')['id'] ?? '';
 
         $orderProduct = $this->getOrderProduct($id);
         $orderProduct->deleted = 1;
@@ -39,7 +39,7 @@ class OrderController extends ApiController
 
     public function retrieveProduct(): void
     {
-        $id = $_POST['postData']['id'] ?? '';
+        $id = App::call()->request->post('postData')['id'] ?? '';
         $orderProduct = $this->getOrderProduct($id);
         $orderProduct->deleted = 0;
         $this->saveOrderProduct($orderProduct);
@@ -50,7 +50,7 @@ class OrderController extends ApiController
         $id = (int) ($_REQUEST['postData']['id'] ?? '');
         $orderStatus = (int) ($_REQUEST['postData']['status'] ?? '');
 
-        $orderRepository = App::getInstance()->getRepository('Order');
+        $orderRepository = App::call()->getRepository('Order');
         $filters[] = [
             'col'   => 'id',
             'oper'  => '=',

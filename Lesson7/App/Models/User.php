@@ -43,26 +43,26 @@ class User extends DataEntity
 
     public function createSession(): void
     {
-        $session = App::getInstance()->session;
+        $session = App::call()->session;
         $session->user = $this;
         unset($session->password);
     }
 
     public static function logout(): void
     {
-        App::getInstance()->session->user = '';
+        App::call()->session->user = '';
     }
 
     public function insert(): bool
     {
-        return App::getInstance()
+        return App::call()
             ->getRepository('User')
             ->insert($this);
     }
 
     public static function getAuthorizedUser()
     {
-        return App::getInstance()->session->user;
+        return App::call()->session->user;
     }
 
     public static function adminRole(): bool
