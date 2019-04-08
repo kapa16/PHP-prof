@@ -2,7 +2,8 @@
 
 namespace App\Views;
 
-use App\Engine\Templater;
+use App\App;
+use App\Models\User;
 use Twig\Environment;
 
 class View
@@ -14,8 +15,9 @@ class View
     public function __construct($data = [])
     {
         $this->data = $data;
-        $this->data['auth'] = $_SESSION['user'] ?? '';
-        $this->twig = Templater::getInstance()->twig;
+        $this->data['auth'] = (bool) (User::getAuthorizedUser() ?? '');
+        $this->data['admin'] = User::adminRole();
+        $this->twig = App::getInstance()->render->twig;
     }
 
     public function __get($name)

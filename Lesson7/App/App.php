@@ -3,15 +3,28 @@
 namespace App;
 
 use App\Controllers\IndexController;
+use App\Engine\Db;
+use App\Engine\Request;
+use App\Engine\Session;
 use App\Models\Repositories\Repository;
 use App\Traits\SingletonTrait;
+use App\Views\Templater;
 use RuntimeException;
 
+/**
+ * @property Request request
+ * @property Db db
+ * @property Templater render
+ * @property Session session
+ * @property string templateDir
+ */
 class App
 {
     use SingletonTrait;
 
-    protected $repositories = [];
+    private $config;
+    private $repositories = [];
+    private $components = [];
 
     public function getRepository(string $repositoryName): Repository
     {
@@ -25,28 +38,59 @@ class App
         return $this->repositories[$repositoryClass];
     }
 
-    public function run(): void
+    private function createComponent($name)
+    {
+        $component = $this->config['components'][$name];
+        if (empty($component)) {
+            throw new RuntimeException("Component {$name} not found");
+        }
+        $className = $component['class'];
+        if (!class_exists($className)) {
+            throw new RuntimeException("Not found class for {$name} component");
+        }
+        unset($component['class']); //Parameters for component except class name
+        return new $className($component);
+
+    }
+
+    public function __set($name, $value)
+    {
+        // TODO: Implement __set() method.
+    }
+
+    public function __get($name)
+    {
+        if (empty($this->components[$name])) {
+            $this->components[$name] = $this->createComponent($name);
+        }
+        return $this->components[$name];
+    }
+
+    public function __isset($name)
+    {
+        return isset($this->components[$name]);
+    }
+
+    public function getConfig($name)
+    {
+        if (empty($this->config[$name])) {
+            throw new RuntimeException('No config named ' . $name);
+        }
+        return $this->config[$name];
+    }
+
+    public function run($config): void
+    {
+        $this->config = $config;
+        $this->runController();
+    }
+
+    private function runController(): void
     {
         try {
-            $path = $_REQUEST['path'] ?? '';
-
-            $params = [];
-            foreach (explode('/', $path) as $item) {
-                if (!$item) {
-                    continue;
-                }
-                $params[] = $item;
-            }
-
-            $api = '';
-            if (!empty($params[0]) && $params[0] === 'api') {
-                $api = 'Api\\';
-                array_shift($params);
-            }
-
-            $controller = $params[0] ?? 'index';
-            $method = $params[1] ?? 'index';
-            $controllerName = 'App\\Controllers\\' . $api . ucfirst($controller) . 'Controller';
+            $controllerName = $this->request->getControllerName();
+            $method = $this->request->getMethodName();
+            $api = $this->request->getApiMode();
 
             if (!class_exists($controllerName)) {
                 throw new RuntimeException('Контроллер не найден');

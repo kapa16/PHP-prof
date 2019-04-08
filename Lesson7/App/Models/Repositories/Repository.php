@@ -4,6 +4,7 @@
 namespace App\Models\Repositories;
 
 
+use App\App;
 use App\Engine\Db;
 use App\Engine\QueryBuilder;
 use App\Models\DataEntity;
@@ -59,7 +60,7 @@ abstract class Repository
     protected function getDb(): Db
     {
         /** @var Db Db */
-        return Db::getInstance();
+        return App::getInstance()->db;
     }
 
     protected function getQueryParams($entity): array

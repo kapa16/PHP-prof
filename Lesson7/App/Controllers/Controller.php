@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\App;
+use App\Models\User;
 use App\Views\View;
 
 abstract class Controller
@@ -20,15 +22,15 @@ abstract class Controller
 
     protected function logVisitedPages(): void
     {
-        if (empty($_SESSION['user'])) {
+        if (empty(User::getAuthorizedUser())) {
             return;
         }
-        $visitedPages = $_SESSION['visited_pages'] ?? [];
+        $visitedPages = App::getInstance()->session->visitedPages ?? [];
         $path = $_REQUEST['path'] ?? 'main';
         $visitedPages[] = str_replace('\\', '', $path);
         while (count($visitedPages) > 5) {
             array_shift($visitedPages);
         }
-        $_SESSION['visited_pages'] = $visitedPages;
+        App::getInstance()->session->visitedPages = $visitedPages;
     }
 }

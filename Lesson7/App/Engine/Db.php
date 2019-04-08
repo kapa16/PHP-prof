@@ -2,7 +2,6 @@
 
 namespace App\Engine;
 
-use App\Traits\SingletonTrait;
 use PDO;
 use PDOStatement;
 use RuntimeException;
@@ -17,18 +16,37 @@ class Db
     private $link;
     /** @var PDOStatement */
     private $sth;
+    private $config;
 
-    use SingletonTrait;
-
-    private function __construct()
+    public function __construct(array $config = [])
     {
-        $dsn = DB_DRIVER . ':dbname=' . DB_NAME . ';host=' . DB_HOST;
-        $this->link = new PDO($dsn, DB_USER, DB_PASSWORD, [PDO::FETCH_ASSOC]);
+        $this->config = $config;
+    }
+
+    private function prepareDsnString(): string
+    {
+        return sprintf('%s:dbname=%s;host=%s;charset=%s',
+            $this->config['driver'],
+            $this->config['database'],
+            $this->config['host'],
+            $this->config['charset']
+        );
+    }
+
+    private function getConnection(): PDO
+    {
+        if (empty($this->link)) {
+            $this->link = new PDO($this->prepareDsnString(),
+                $this->config['login'],
+                $this->config['password'],
+                [PDO::FETCH_ASSOC]);
+        }
+        return $this->link;
     }
 
     public function exec(string $sql, array $params): bool
     {
-        $this->sth = $this->link->prepare($sql);
+        $this->sth = $this->getConnection()->prepare($sql);
         return $this->queryExecute($params);
     }
 
@@ -50,14 +68,14 @@ class Db
      */
     public function queryClass(string $sql, array $params, string $class): bool
     {
-        $this->sth = $this->link->prepare($sql);
+        $this->sth = $this->getConnection()->prepare($sql);
         $this->sth->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $class);
         return $this->queryExecute($params);
     }
 
     public function queryArray(string $sql, array $params): bool
     {
-        $this->sth = $this->link->prepare($sql);
+        $this->sth = $this->getConnection()->prepare($sql);
         $this->sth->setFetchMode(PDO::FETCH_ASSOC);
         return $this->queryExecute($params);
     }
@@ -85,7 +103,7 @@ class Db
      * Возвращает один обект из запроса
      * @param string $sql - текст запроса
      * @param array $params - параметры для подстановки в запрос
-     * @param string $class- имя класса дла создания экземлпяров по полученным данным
+     * @param string $class - имя класса дла создания экземлпяров по полученным данным
      * @return object - объект переданного класса
      */
     public function queryOne(string $sql, array $params, string $class)
@@ -96,17 +114,17 @@ class Db
 
     public function queryOneAssoc(string $sql, array $params)
     {
-        $this->sth = $this->link->prepare($sql);
+        $this->sth = $this->getConnection()->prepare($sql);
         $this->sth->execute($params);
         return $this->sth->fetch();
     }
 
-     /**
+    /**
      * Возвращает id последних вставленных данных
      * @return string - значение ID
      */
-    public function getInsertedId():string
+    public function getInsertedId(): string
     {
-        return $this->link->lastInsertId();
+        return $this->getConnection()->lastInsertId();
     }
 }

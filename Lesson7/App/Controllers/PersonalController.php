@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\App;
+use App\Models\User;
 
 class PersonalController extends Controller
 {
@@ -10,14 +11,14 @@ class PersonalController extends Controller
 
     public function index(): string
     {
-        $authenticatedUser = $_SESSION['user'] ?? '';
+        $authenticatedUser = User::getAuthorizedUser() ?? '';
         if (!$authenticatedUser) {
-            header('Location: /login');
+            header('Location: /user/login');
         }
 
         $orders = App::getInstance()
             ->getRepository('Order')
-            ->getOrdersList($authenticatedUser->id);
+            ->getOrdersList((int) $authenticatedUser->id);
 
         $statuses = App::getInstance()
             ->getRepository('OrderStatus')

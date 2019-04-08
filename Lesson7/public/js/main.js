@@ -34,39 +34,34 @@ window.onload = () => {
     })
   });
 
-  $('.order__product_remove').on('click', (evt) => {
+  const removeRetrieve = (evt) => {
     const $target = $(evt.target);
+    const $tableRowProduct = $target.closest('.table_row');
+    let action;
+    if ($tableRowProduct.hasClass('table_row_deleted')) {
+      action = 'retrieve';
+    } else {
+      action = 'remove';
+    }
     const orderProductId = $target.data('id');
     $.post({
-      url: `/api/order/removeProduct?id=${orderProductId}`,
+      url: `/api/order/${action}Product?id=${orderProductId}`,
       data: {
         postData: {
           id: orderProductId
         }
       },
       success: () => {
-        $target.closest('.table_row').addClass('table_row_deleted');
-        $target.text('Retrieve');
+        $tableRowProduct.toggleClass('table_row_deleted');
+        $target.text(action);
       }
     })
+  };
+
+  $('.order__product_retrieve_remove').on('click', (evt) => {
+    removeRetrieve(evt);
   });
 
-  $('.order__product_retrieve').on('click', (evt) => {
-    const $target = $(evt.target);
-    const orderProductId = $target.data('id');
-    $.post({
-      url: '/api/order/retrieveProduct?id=${orderProductId}',
-      data: {
-        postData: {
-          id: orderProductId
-        }
-      },
-      success: () => {
-        $target.closest('.table_row').removeClass('table_row_deleted');
-        $target.text('Remove');
-      }
-    })
-  });
 };
 
 

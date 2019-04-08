@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Engine;
+namespace App\Views;
 
+use App\App;
 use App\Traits\SingletonTrait;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -17,7 +18,7 @@ class Templater
      */
     public function __construct()
     {
-        $this->loader = new FilesystemLoader(TEMPLATE_DIR);
+        $this->loader = new FilesystemLoader(App::getInstance()->getConfig('templateDir'));
         $this->twig = new Environment($this->loader);
     }
 }

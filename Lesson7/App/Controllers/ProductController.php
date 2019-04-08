@@ -39,7 +39,6 @@ class ProductController extends Controller
         $params = [
             'header' => 'Products catalog',
             'type' => 'catalog',
-            'admin' => User::adminRole(),
             'products' => $products
         ];
         return $this->render($params);
@@ -70,7 +69,6 @@ class ProductController extends Controller
         $params = [
             'header' => 'Product card',
             'type' => 'card',
-            'admin' => User::adminRole(),
             'product' => $product
         ];
         return $this->render($params);
@@ -86,7 +84,6 @@ class ProductController extends Controller
             'header' => 'Product creating',
             'type' => 'edit',
             'buttonTitle' => 'Create',
-            'admin' => User::adminRole(),
         ];
         return $this->render($params);
     }
@@ -102,7 +99,6 @@ class ProductController extends Controller
             'header' => 'Product editing',
             'type' => 'edit',
             'buttonTitle' => 'Update',
-            'admin' => User::adminRole(),
             'product' => $product
         ];
         return $this->render($params);

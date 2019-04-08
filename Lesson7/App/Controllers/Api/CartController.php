@@ -110,13 +110,14 @@ class CartController extends ApiController
         if (!$this->cart) {
             throw new RuntimeException('Cart is empty');
         }
-        $user = User::getAuthorized();
+        $user = User::getAuthorizedUser();
         if (!$user) {
             $this->locationRedirect = '/user/login';
             throw new RuntimeException('You need login to make order');
         }
 
         $orderProducts = $this->get();
+
         $result = Order::create($user->id, $orderProducts);
 
         if ($result) {

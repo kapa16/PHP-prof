@@ -38,18 +38,19 @@ class User extends DataEntity
 
     public function authorized(): bool
     {
-        return !empty($_SESSION['user']);
+        return !empty(self::getAuthorizedUser());
     }
 
     public function createSession(): void
     {
-        $_SESSION['user'] = $this;
-        unset($_SESSION['user']->password);
+        $session = App::getInstance()->session;
+        $session->user = $this;
+        unset($session->password);
     }
 
     public static function logout(): void
     {
-        unset($_SESSION['user']);
+        App::getInstance()->session->user = '';
     }
 
     public function insert(): bool
@@ -59,13 +60,13 @@ class User extends DataEntity
             ->insert($this);
     }
 
-    public static function getAuthorized()
+    public static function getAuthorizedUser()
     {
-        return $_SESSION['user'] ?? '';
+        return App::getInstance()->session->user;
     }
 
     public static function adminRole(): bool
     {
-        return (bool) ($_SESSION['user']->role ?? '');
+        return (bool) (self::getAuthorizedUser()->role ?? '');
     }
 }
