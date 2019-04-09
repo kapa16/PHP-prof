@@ -1,0 +1,47 @@
+{% for order in orders %}
+    <div class="order_wrapper">
+        <h3>Order №{{ order.id }}, status:
+            {% if admin == false %}
+                <span class="order_status">{{ order.status }}</span>
+            {% else %}
+                <form action="" method="post">
+                    <label> Order №{{ order.id }}, status:
+                        <select name="status">
+                            {% for status in statuses %}
+                                <option {% if status.id == order.status_id %} selected {% endif %}>{{ status.id }}
+                                    . {{ status.status }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <button class="btn btn-primary order__status_change" type="submit" data-id="{{ order.id }}">Change order
+                        status
+                    </button>
+                </form>
+            {% endif %}
+        </h3>
+        <div class="row table_row">
+            <div class="col-8 table_column">Product</div>
+            <div class="col-1 table_column">Quantity</div>
+            <div class="col-1 table_column">Price</div>
+            <div class="col-1 table_column">Total</div>
+            <div class="col-1 table_column"></div>
+        </div>
+
+        {% for product in order.products %}
+            <div class="row table_row {% if product.deleted %}table_row_deleted{% endif %}">
+                <div class="col-8 table_column">{{ product.name }}</div>
+                <div class="col-1 table_column">{{ product.quantity }}</div>
+                <div class="col-1 table_column">{{ product.price }}</div>
+                <div class="col-1 table_column">{{ product.quantity * product.price }}</div>
+                <div class="col-1 table_column">
+                    <button class="btn btn-primary order__product_retrieve_remove"
+                            data-id="{{ product.id }}">
+                        {% if product.deleted %}Retrieve{% else %}Remove{% endif %}
+                    </button>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+{% endfor %}
+

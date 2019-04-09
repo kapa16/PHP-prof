@@ -1,0 +1,97 @@
+{% extends "layout.twig" %}
+
+{% block main %}
+    {% if type == 'catalog' %}
+        {% if admin == true %}
+            <a href="/product/create" class="btn btn-primary mb-1" role="button">Add new product</a>
+            <a href="/category" class="btn btn-primary mb-1" role="button">Category management</a>
+        {% endif %}
+        <div class="products__catalog row justify-content-between">
+            {% for product in products %}
+                <div class="card col-xs-12 col-md-6 col-lg-4 col-xl-3 py-3">
+                    <a href="/product/card?product-id={{ product.id }}">
+                        {% if product.deleted == true %}
+                            <div class="d-flex justify-content-between mb-1">
+                                <p class="text-danger">Product deleted</p>
+                                <a href="/productEdit/restore?product-id={{ product.id }}" class="btn btn-success" role="button">Restore</a>
+                            </div>
+                        {% endif %}
+                        <img
+                                src="{{ product.image }}"
+                                alt="{{ product.name }}"
+                                class="product__image card-img-top"
+                                title="Просмотр товара"
+                        >
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text">Price: {{ product.price }}</p>
+                            <button class="btn btn-primary btn-buy" data-id="{{ product.id }}"
+                                    data-name="{{ product.name }}"
+                                    data-price="{{ product.price }}">
+                                Add to cart
+                            </button>
+                        </div>
+                    </a>
+
+                </div>
+            {% endfor %}
+        </div>
+    {% elseif type == 'card' %}
+        <div class="product__view_wrap">
+            {% if admin == true %}
+                <div class="product__control">
+                    <a href="/product/edit?product-id={{ product.id }}" class="btn btn-primary mr-1" role="button">Редактировать
+                        товар</a>
+                    <a href="/productEdit/delete?product-id={{ product.id }}" class="btn btn-danger" role="button">Удалить
+                        товар</a>
+                </div>
+            {% endif %}
+
+            <div class="product__view">
+                <h3>{{ product.name }}</h3>
+                <img
+                        src="{{ product.image }}"
+                        alt="{{ product.name }}"
+                        class="product__image"
+                        title="Просмотр товара"
+                >
+                <p>Price: {{ product.price }}</p>
+                <button class="btn btn-primary btn-buy" data-id="{{ product.id }}"
+                        data-name="{{ product.name }}"
+                        data-price="{{ product.price }}">
+                    Add to cart
+                </button>
+                <p>Description: {{ product.description }}</p>
+            </div>
+        </div>
+    {% elseif type == 'edit' %}
+        <form action="/productEdit/save?product-id={{ product.id }}" method="post">
+            <div class="form-group">
+                <label for="product__name">Name: </label>
+                <input id="product__name" type="text" name="name" value="{{ product.name }}" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="product__description">Description: </label>
+                <input id="product__description" type="text" name="description" value="{{ product.description }}"
+                       class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="product__price">Price:</label>
+                <input id="product__price" type="number" step="0.01" name="price" value="{{ product.price }}"
+                       class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="product__image">Image: </label>
+                <input id="product__image" type="text" name="image" value="{{ product.image }}" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="product__price">Category:</label>
+                <input id="product__price" type="number" step="1" name="category_id" value="{{ product.category_id }}"
+                       class="form-control">
+            </div>
+            <button class="btn btn-primary" type="submit">{{ buttonTitle }}</button>
+        </form>
+
+        <a href="/product">Product catalog</a>
+    {% endif %}
+{% endblock %}
