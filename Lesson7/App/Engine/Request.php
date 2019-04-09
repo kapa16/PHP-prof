@@ -15,15 +15,28 @@ class Request
 
     public function __construct()
     {
-        $this->requestMethod = $_SERVER['REQUEST_METHOD'];
-        $this->requestString = $_REQUEST['path'];
+        $this->requestMethod = $_SERVER['REQUEST_METHOD'] ?? '';
+        $this->requestString = $_REQUEST['path'] ?? '';
         $this->parseRequest();
+    }
+
+    private function escapeInput($data)
+    {
+        if (is_array($data)) {
+            foreach ($data as $value) {
+                $this->escapeInput($value);
+            }
+        } elseif (is_string($data)) {
+            return strip_tags($data);
+        }
+        return $data;
     }
 
     private function fillParams($requestMethod, array $data = []): void
     {
+        $this->escapeInput($data);
         foreach ($data as $key => $value) {
-            $this->params[$requestMethod][$key] = strip_tags($value);
+            $this->params[$requestMethod][$key] = $value;
         }
     }
 
