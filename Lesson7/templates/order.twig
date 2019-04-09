@@ -1,24 +1,25 @@
 {% for order in orders %}
     <div class="order_wrapper">
-        <h3>Order №{{ order.id }}, status:
-            {% if admin == false %}
+
+        {% if admin == false %}
+            <h3>Order №{{ order.id }}, status:
                 <span class="order_status">{{ order.status }}</span>
-            {% else %}
-                <form action="" method="post">
-                    <label> Order №{{ order.id }}, status:
-                        <select name="status">
-                            {% for status in statuses %}
-                                <option {% if status.id == order.status_id %} selected {% endif %}>{{ status.id }}
-                                    . {{ status.status }}</option>
-                            {% endfor %}
-                        </select>
-                    </label>
-                    <button class="btn btn-primary order__status_change" type="submit" data-id="{{ order.id }}">Change order
-                        status
-                    </button>
-                </form>
-            {% endif %}
-        </h3>
+            </h3>
+        {% else %}
+            <form action="" method="post">
+                <label> Order №{{ order.id }}, status:
+                    <select name="status">
+                        {% for status in statuses %}
+                            <option {% if status.id == order.status_id %} selected {% endif %}>{{ status.id }}
+                                . {{ status.status }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <button class="btn btn-primary order__status_change" type="submit" data-id="{{ order.id }}">Change order
+                    status
+                </button>
+            </form>
+        {% endif %}
         <div class="row table_row">
             <div class="col-8 table_column">Product</div>
             <div class="col-1 table_column">Quantity</div>

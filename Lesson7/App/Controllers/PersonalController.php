@@ -16,9 +16,13 @@ class PersonalController extends Controller
             header('Location: /user/login');
         }
 
+        $userId = 0;
+        if (!User::adminRole()) {
+            $userId = (int) $authenticatedUser->id;
+        }
         $orders = App::call()
             ->getRepository('Order')
-            ->getOrdersList((int) $authenticatedUser->id);
+            ->getOrdersList($userId);
 
         $statuses = App::call()
             ->getRepository('OrderStatus')

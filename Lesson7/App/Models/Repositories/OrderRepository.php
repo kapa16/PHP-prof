@@ -82,21 +82,21 @@ class OrderRepository extends Repository
     }
 
 
-    public function getOrders()
-    {
-        $sql = "SELECT `o`.`id`,
-                       `os`.`status`,
-                       `o`.`status_id`,
-                       `p`.`id` AS 'id',
-                       `p`.`name`,
-                       `op`.`quantity`,
-                       `p`.`price`,
-                       `op`.`id`       AS 'order_product_id',
-                       `op`.`deleted`  AS 'deleted'
-                FROM `order` `o`
-                         LEFT JOIN `order_status` `os` ON `o`.`status_id` = `os`.`id`
-                         RIGHT JOIN `order_product` `op` ON `op`.`order_id` = `o`.`id`
-                         LEFT JOIN `products` `p` ON `p`.`id` = `op`.`product_id`
-                ORDER BY `o`.`create_data`";
-    }
+//    public function getOrders()
+//    {
+//        $sql = "SELECT `o`.`id`,
+//                       `os`.`status`,
+//                       `o`.`status_id`,
+//                       `p`.`id` AS 'id',
+//                       `p`.`name`,
+//                       `op`.`quantity`,
+//                       `p`.`price`,
+//                       `op`.`id`       AS 'order_product_id',
+//                       `op`.`deleted`  AS 'deleted'
+//                FROM `order` `o`
+//                         LEFT JOIN `order_status` `os` ON `o`.`status_id` = `os`.`id`
+//                         RIGHT JOIN `order_product` `op` ON `op`.`order_id` = `o`.`id`
+//                         LEFT JOIN `products` `p` ON `p`.`id` = `op`.`product_id`
+//                ORDER BY `o`.`create_data`";
+//    }
 }
