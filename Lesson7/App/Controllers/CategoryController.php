@@ -9,10 +9,13 @@ use RuntimeException;
 
 class CategoryController extends Controller
 {
-    public function index()
+    protected $template = 'category.twig';
+
+    public function index(): string
     {
         if (!User::adminRole()) {
             throw new RuntimeException('No access');
         }
+        return $this->render();
     }
 }

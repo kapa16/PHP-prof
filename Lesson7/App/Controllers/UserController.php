@@ -11,14 +11,16 @@ class UserController extends Controller
     public function login(): string
     {
         $params = [];
-        $error = $this->data['error'] ?? '';
+        $error = App::call()->request->get('error');
         $errors = [
             'nodata' => 'Enter login and password',
             'nouser' => 'Login or password wrong',
         ];
 
         if (!empty($errors[$error])) {
-            $params['error'] = $errors[$error];
+            $params = [
+                'error' => $errors[$error]
+            ];
         }
 
         return $this->render($params);
